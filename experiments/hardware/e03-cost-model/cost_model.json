@@ -1,0 +1,347 @@
+{
+ "devices": {
+  "fake_torino": {
+   "default_rep_delay_s": 0.00025,
+   "dt_s": 4e-09,
+   "num_qubits": 133
+  },
+  "fake_fez": {
+   "default_rep_delay_s": 0.00025,
+   "dt_s": 4e-09,
+   "num_qubits": 156
+  },
+  "fake_brisbane": {
+   "default_rep_delay_s": 0.00025,
+   "dt_s": 5e-10,
+   "num_qubits": 127
+  }
+ },
+ "model": {
+  "overhead_s_per_job": 2.0,
+  "job_circuits": 300,
+  "quick_per_execution_s": 0.00035,
+  "low": "shots x (rep_delay + duration) per circuit + overhead",
+  "high": "shots x 350 us per circuit + overhead"
+ },
+ "breast_cancer": {
+  "dataset": "breast_cancer",
+  "seed": 0,
+  "n_train": 398,
+  "n_test": 171,
+  "models": [
+   {
+    "model": "zz_qsvc",
+    "qubits": 8,
+    "circuits_fit_predict": 147061,
+    "tuning_circuits_on_device": 0,
+    "shots": 1024,
+    "devices": {
+     "fake_torino": {
+      "two_qubit_gates": 391,
+      "depth": 623,
+      "duration_us": 23.559999999999977,
+      "qpu_low_s": 42177.52733184,
+      "qpu_high_s": 53688.6624,
+      "per_circuit_low_s": 0.28680294117298266,
+      "per_circuit_high_s": 0.36507750117298265
+     },
+     "fake_fez": {
+      "two_qubit_gates": 427,
+      "depth": 768,
+      "duration_us": 30.851999999999922,
+      "qpu_low_s": 43275.63299532799,
+      "qpu_high_s": 53688.6624,
+      "per_circuit_low_s": 0.2942699491729826,
+      "per_circuit_high_s": 0.36507750117298265
+     },
+     "fake_brisbane": {
+      "two_qubit_gates": 387,
+      "depth": 1063,
+      "duration_us": 161.13999999999956,
+      "qpu_low_s": 62895.76336895993,
+      "qpu_high_s": 53688.6624,
+      "per_circuit_low_s": 0.42768486117298216,
+      "per_circuit_high_s": 0.36507750117298265
+     }
+    }
+   },
+   {
+    "model": "fqk_bandwidth_full",
+    "qubits": 8,
+    "circuits_fit_predict": 147061,
+    "tuning_circuits_on_device": 2276238,
+    "shots": 1024,
+    "devices": {
+     "fake_torino": {
+      "two_qubit_gates": 391,
+      "depth": 623,
+      "duration_us": 23.559999999999977,
+      "qpu_low_s": 42177.52733184,
+      "qpu_high_s": 53688.6624,
+      "per_circuit_low_s": 0.28680294117298266,
+      "per_circuit_high_s": 0.36507750117298265
+     },
+     "fake_fez": {
+      "two_qubit_gates": 427,
+      "depth": 768,
+      "duration_us": 30.851999999999922,
+      "qpu_low_s": 43275.63299532799,
+      "qpu_high_s": 53688.6624,
+      "per_circuit_low_s": 0.2942699491729826,
+      "per_circuit_high_s": 0.36507750117298265
+     },
+     "fake_brisbane": {
+      "two_qubit_gates": 387,
+      "depth": 1063,
+      "duration_us": 161.13999999999956,
+      "qpu_low_s": 62895.76336895993,
+      "qpu_high_s": 53688.6624,
+      "per_circuit_low_s": 0.42768486117298216,
+      "per_circuit_high_s": 0.36507750117298265
+     }
+    }
+   },
+   {
+    "model": "fqk_bandwidth_linear",
+    "qubits": 8,
+    "circuits_fit_predict": 147061,
+    "tuning_circuits_on_device": 2276238,
+    "shots": 1024,
+    "devices": {
+     "fake_torino": {
+      "two_qubit_gates": 54,
+      "depth": 133,
+      "duration_us": 5.983999999999996,
+      "qpu_low_s": 39530.749336576,
+      "qpu_high_s": 53688.6624,
+      "per_circuit_low_s": 0.26880511717298267,
+      "per_circuit_high_s": 0.36507750117298265
+     },
+     "fake_fez": {
+      "two_qubit_gates": 54,
+      "depth": 133,
+      "duration_us": 5.7600000000000025,
+      "qpu_low_s": 39497.01707264,
+      "qpu_high_s": 53688.6624,
+      "per_circuit_low_s": 0.26857574117298266,
+      "per_circuit_high_s": 0.36507750117298265
+     },
+     "fake_brisbane": {
+      "two_qubit_gates": 54,
+      "depth": 192,
+      "duration_us": 27.51999999999999,
+      "qpu_low_s": 42773.86556928,
+      "qpu_high_s": 53688.6624,
+      "per_circuit_low_s": 0.29085798117298267,
+      "per_circuit_high_s": 0.36507750117298265
+     }
+    }
+   },
+   {
+    "model": "pqk",
+    "qubits": 9,
+    "circuits_fit_predict": 1707,
+    "tuning_circuits_on_device": 0,
+    "shots": 1024,
+    "devices": {
+     "fake_torino": {
+      "two_qubit_gates": 72,
+      "depth": 165,
+      "duration_us": 6.331999999999995,
+      "qpu_low_s": 460.060133376,
+      "qpu_high_s": 623.7888,
+      "per_circuit_low_s": 0.2695138449771529,
+      "per_circuit_high_s": 0.3654298769771529
+     },
+     "fake_fez": {
+      "two_qubit_gates": 72,
+      "depth": 165,
+      "duration_us": 6.264000000000005,
+      "qpu_low_s": 459.94127155200005,
+      "qpu_high_s": 623.7888,
+      "per_circuit_low_s": 0.26944421297715293,
+      "per_circuit_high_s": 0.3654298769771529
+     },
+     "fake_brisbane": {
+      "two_qubit_gates": 72,
+      "depth": 219,
+      "duration_us": 29.499999999999986,
+      "qpu_low_s": 500.55705600000005,
+      "qpu_high_s": 623.7888,
+      "per_circuit_low_s": 0.2932378769771529,
+      "per_circuit_high_s": 0.3654298769771529
+     }
+    }
+   },
+   {
+    "model": "separable",
+    "qubits": 8,
+    "circuits_fit_predict": 147061,
+    "tuning_circuits_on_device": 2276238,
+    "shots": 1024,
+    "devices": {
+     "fake_torino": {
+      "two_qubit_gates": 0,
+      "depth": 6,
+      "duration_us": 1.624,
+      "qpu_low_s": 38874.174913536,
+      "qpu_high_s": 53688.6624,
+      "per_circuit_low_s": 0.26434047717298265,
+      "per_circuit_high_s": 0.36507750117298265
+     },
+     "fake_fez": {
+      "two_qubit_gates": 0,
+      "depth": 6,
+      "duration_us": 1.608,
+      "qpu_low_s": 38871.765466112,
+      "qpu_high_s": 53688.6624,
+      "per_circuit_low_s": 0.26432409317298267,
+      "per_circuit_high_s": 0.36507750117298265
+     },
+     "fake_brisbane": {
+      "two_qubit_gates": 0,
+      "depth": 6,
+      "duration_us": 1.42,
+      "qpu_low_s": 38843.454458880005,
+      "qpu_high_s": 53688.6624,
+      "per_circuit_low_s": 0.2641315811729827,
+      "per_circuit_high_s": 0.36507750117298265
+     }
+    }
+   },
+   {
+    "model": "qlassifier",
+    "qubits": 4,
+    "circuits_fit_predict": 1707,
+    "tuning_circuits_on_device": 0,
+    "shots": 1024,
+    "devices": {
+     "fake_torino": {
+      "two_qubit_gates": 0,
+      "depth": 6,
+      "duration_us": 1.624,
+      "qpu_low_s": 451.830700032,
+      "qpu_high_s": 623.7888,
+      "per_circuit_low_s": 0.2646928529771529,
+      "per_circuit_high_s": 0.3654298769771529
+     },
+     "fake_fez": {
+      "two_qubit_gates": 0,
+      "depth": 6,
+      "duration_us": 1.608,
+      "qpu_low_s": 451.80273254400004,
+      "qpu_high_s": 623.7888,
+      "per_circuit_low_s": 0.2646764689771529,
+      "per_circuit_high_s": 0.3654298769771529
+     },
+     "fake_brisbane": {
+      "two_qubit_gates": 0,
+      "depth": 6,
+      "duration_us": 1.42,
+      "qpu_low_s": 451.47411456000003,
+      "qpu_high_s": 623.7888,
+      "per_circuit_low_s": 0.26448395697715293,
+      "per_circuit_high_s": 0.3654298769771529
+     }
+    }
+   }
+  ]
+ },
+ "published": [
+  {
+   "source": "arXiv:2607.20377",
+   "device": "ibm_fez (Heron r2)",
+   "circuits": 900,
+   "shots": 1024,
+   "qpu_s": 244.0,
+   "circuit": "ZZ kernel, 4 qubits, compute-uncompute, compiled depth <= 102, <= 22 CZ (3 jobs of 300; paper text)",
+   "per_circuit_s": 0.27111111111111114,
+   "model_duration_us": 3.839999999999999,
+   "model_classes": [
+    {
+     "duration_us": 3.839999999999999,
+     "two_qubit_gates": 22,
+     "depth": 74
+    }
+   ],
+   "model_low_s": 239.93894400000002,
+   "model_high_s": 328.56,
+   "model_per_circuit_low_s": 0.2665988266666667,
+   "model_per_circuit_high_s": 0.36506666666666665,
+   "inside": true
+  },
+  {
+   "source": "arXiv:2604.18837 (code archive, qpu_budget_analysis.py)",
+   "device": "ibm_fez (Heron r2)",
+   "circuits": 1830,
+   "shots": 1024,
+   "qpu_s": 584.0,
+   "circuit": "Belis / Rot2DoF kernels, 5 qubits, depth 22-74, 0-16 CZ (7 jobs)",
+   "per_circuit_s": 0.3191256830601093,
+   "model_duration_us": 4.319999999999999,
+   "model_classes": [
+    {
+     "duration_us": 1.608,
+     "two_qubit_gates": 0,
+     "depth": 6
+    },
+    {
+     "duration_us": 4.319999999999999,
+     "two_qubit_gates": 30,
+     "depth": 90
+    }
+   ],
+   "model_low_s": 490.5753344,
+   "model_high_s": 669.872,
+   "model_per_circuit_low_s": 0.2680739532240437,
+   "model_per_circuit_high_s": 0.3660502732240437,
+   "inside": true
+  },
+  {
+   "source": "arXiv:2605.14672",
+   "device": "ibm_pittsburgh (Heron r3)",
+   "circuits": 1675,
+   "shots": 2048,
+   "qpu_s": 1158.0,
+   "circuit": "fidelity kernel circuits, 6 jobs of <= 300",
+   "per_circuit_s": 0.6913432835820895,
+   "model_duration_us": 8.880000000000015,
+   "model_classes": [
+    {
+     "duration_us": 8.880000000000015,
+     "two_qubit_gates": 64,
+     "depth": 202
+    },
+    {
+     "duration_us": 5.7600000000000025,
+     "two_qubit_gates": 54,
+     "depth": 133
+    }
+   ],
+   "model_low_s": 900.061952,
+   "model_high_s": 1212.64,
+   "model_per_circuit_low_s": 0.5373504191044777,
+   "model_per_circuit_high_s": 0.7239641791044776,
+   "inside": true
+  }
+ ],
+ "executed_counts": {
+  "resources": {
+   "backend": "fake_fez",
+   "qubits": 4,
+   "two_qubit_gates": 0,
+   "depth": 10,
+   "circuits_per_sample": 3,
+   "circuits_fit": 1194,
+   "circuits_predict": 513,
+   "tuning_circuits": 0,
+   "shots": 1024
+  },
+  "model_circuits": 1707,
+  "executed_parameter_sets_per_qubit": 1722.0,
+  "executed_experiments": 27,
+  "whole_register_rows_checked": 20,
+  "match": true
+ },
+ "seconds": 39.360972624999704
+}

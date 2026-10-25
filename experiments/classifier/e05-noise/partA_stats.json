@@ -1,0 +1,152 @@
+{
+  "fake_torino": {
+    "bloch_seconds": 4.56,
+    "transpile_example": {
+      "layout": [
+        60,
+        51,
+        66,
+        81
+      ],
+      "ops": {
+        "X": {
+          "rz": 16,
+          "sx": 12,
+          "measure": 4,
+          "barrier": 1
+        },
+        "Y": {
+          "rz": 16,
+          "sx": 8,
+          "measure": 4,
+          "barrier": 1
+        },
+        "Z": {
+          "rz": 24,
+          "sx": 12,
+          "measure": 4,
+          "barrier": 1
+        }
+      },
+      "depth": {
+        "X": 8,
+        "Y": 7,
+        "Z": 10
+      },
+      "two_qubit_gates": 0,
+      "e0": [
+        0.0078,
+        0.0037,
+        0.0066,
+        0.0054
+      ],
+      "e1": [
+        0.0078,
+        0.0061,
+        0.0065,
+        0.0044
+      ],
+      "circuits": 1709
+    }
+  },
+  "fake_fez": {
+    "bloch_seconds": 6.97,
+    "transpile_example": {
+      "layout": [
+        84,
+        96,
+        23,
+        4
+      ],
+      "ops": {
+        "X": {
+          "rz": 16,
+          "sx": 12,
+          "measure": 4,
+          "barrier": 1
+        },
+        "Y": {
+          "rz": 16,
+          "sx": 8,
+          "measure": 4,
+          "barrier": 1
+        },
+        "Z": {
+          "rz": 24,
+          "sx": 12,
+          "measure": 4,
+          "barrier": 1
+        }
+      },
+      "depth": {
+        "X": 8,
+        "Y": 7,
+        "Z": 10
+      },
+      "two_qubit_gates": 0,
+      "e0": [
+        0.0034,
+        0.0016,
+        0.0026,
+        0.0007
+      ],
+      "e1": [
+        0.0037,
+        0.0033,
+        0.0026,
+        0.0013
+      ],
+      "circuits": 1709
+    }
+  },
+  "fake_brisbane": {
+    "bloch_seconds": 7.15,
+    "transpile_example": {
+      "layout": [
+        15,
+        124,
+        103,
+        112
+      ],
+      "ops": {
+        "X": {
+          "rz": 16,
+          "sx": 12,
+          "measure": 4,
+          "barrier": 1
+        },
+        "Y": {
+          "rz": 16,
+          "sx": 8,
+          "measure": 4,
+          "barrier": 1
+        },
+        "Z": {
+          "rz": 24,
+          "sx": 12,
+          "measure": 4,
+          "barrier": 1
+        }
+      },
+      "depth": {
+        "X": 8,
+        "Y": 7,
+        "Z": 10
+      },
+      "two_qubit_gates": 0,
+      "e0": [
+        0.0096,
+        0.0061,
+        0.0066,
+        0.0056
+      ],
+      "e1": [
+        0.0083,
+        0.0088,
+        0.0066,
+        0.0051
+      ],
+      "circuits": 1709
+    }
+  }
+}

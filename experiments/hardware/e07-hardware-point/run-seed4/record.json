@@ -1,0 +1,332 @@
+{
+ "seed": 4,
+ "dataset": "breast_cancer",
+ "backend": "ibm_fez",
+ "processor_type": {
+  "family": "Heron",
+  "revision": "2"
+ },
+ "n_train": 60,
+ "n_test": 40,
+ "qubits_logical": 4,
+ "physical_qubits": [
+  86,
+  50,
+  4,
+  130
+ ],
+ "shots": 1024,
+ "circuits": 300,
+ "pubs": 3,
+ "parameter_sets_per_pub": 100,
+ "two_qubit_gates": 0,
+ "depth": 10,
+ "duration_us": 1.732,
+ "cost_estimate": {
+  "qpu_low_s": 79.3320704,
+  "qpu_high_s": 109.52
+ },
+ "tuned": {
+  "gamma": 0.25,
+  "C": 40.0
+ },
+ "transpiler": {
+  "optimization_level": 3,
+  "seed_transpiler": 0,
+  "layout_rule": "Z circuit layout pinned for X and Y (ADR 0006)"
+ },
+ "sampler_options": {
+  "default_shots": 1024,
+  "dynamical_decoupling": false,
+  "twirling_gates": false,
+  "twirling_measure": false
+ },
+ "timestamps": {
+  "prepared": "2026-10-25T12:05:39Z",
+  "submitted": "2026-10-25T12:05:39Z",
+  "result_received": "2026-10-25T12:07:16Z"
+ },
+ "calibration_before": {
+  "captured_at": "2026-10-25T12:05:39Z",
+  "backend": "ibm_fez",
+  "qubits": {
+   "86": {
+    "t1_us": 191.39400392775718,
+    "t2_us": 111.48936680009619,
+    "frequency_ghz": null,
+    "sx": {
+     "error": 0.0003987005979327789,
+     "duration_ns": 24.0
+    },
+    "x": {
+     "error": 0.0003987005979327789,
+     "duration_ns": 24.0
+    },
+    "rz": {
+     "error": 0.0,
+     "duration_ns": 0.0
+    },
+    "measure": {
+     "error": 0.00341796875,
+     "duration_ns": 1660.0
+    },
+    "reset": {
+     "error": null,
+     "duration_ns": 1684.0
+    },
+    "readout_error": 0.00341796875,
+    "prob_meas0_prep1": 0.005859375,
+    "prob_meas1_prep0": 0.0009765625
+   },
+   "50": {
+    "t1_us": 107.65197802491913,
+    "t2_us": 94.18784376951538,
+    "frequency_ghz": null,
+    "sx": {
+     "error": 0.0004073196821281876,
+     "duration_ns": 24.0
+    },
+    "x": {
+     "error": 0.0004073196821281876,
+     "duration_ns": 24.0
+    },
+    "rz": {
+     "error": 0.0,
+     "duration_ns": 0.0
+    },
+    "measure": {
+     "error": 0.0035400390625,
+     "duration_ns": 1660.0
+    },
+    "reset": {
+     "error": null,
+     "duration_ns": 1684.0
+    },
+    "readout_error": 0.0035400390625,
+    "prob_meas0_prep1": 0.00634765625,
+    "prob_meas1_prep0": 0.0009765625
+   },
+   "4": {
+    "t1_us": 116.88874483730815,
+    "t2_us": 104.45050775940663,
+    "frequency_ghz": null,
+    "sx": {
+     "error": 0.00029764480351117774,
+     "duration_ns": 24.0
+    },
+    "x": {
+     "error": 0.00029764480351117774,
+     "duration_ns": 24.0
+    },
+    "rz": {
+     "error": 0.0,
+     "duration_ns": 0.0
+    },
+    "measure": {
+     "error": 0.0028076171875,
+     "duration_ns": 1660.0
+    },
+    "reset": {
+     "error": null,
+     "duration_ns": 1684.0
+    },
+    "readout_error": 0.0028076171875,
+    "prob_meas0_prep1": 0.0048828125,
+    "prob_meas1_prep0": 0.000732421875
+   },
+   "130": {
+    "t1_us": 157.5798198051954,
+    "t2_us": 152.70569222532873,
+    "frequency_ghz": null,
+    "sx": {
+     "error": 0.000411455982012827,
+     "duration_ns": 24.0
+    },
+    "x": {
+     "error": 0.000411455982012827,
+     "duration_ns": 24.0
+    },
+    "rz": {
+     "error": 0.0,
+     "duration_ns": 0.0
+    },
+    "measure": {
+     "error": 0.0029296875,
+     "duration_ns": 1660.0
+    },
+    "reset": {
+     "error": null,
+     "duration_ns": 1684.0
+    },
+    "readout_error": 0.0029296875,
+    "prob_meas0_prep1": 0.005126953125,
+    "prob_meas1_prep0": 0.000732421875
+   }
+  },
+  "properties_last_update_date": "2026-10-25 12:39:07+01:00"
+ },
+ "job_id": "dbev157sstms73fcr4s0",
+ "usage_s": 82.0,
+ "metrics": {
+  "caller": "qiskit_ibm_runtime~sampler.py",
+  "qiskit_version": "qiskit_ibm_runtime-0.51.0,qiskit-2.6.1*,qiskit_aer-0.18.0",
+  "timestamps": {
+   "created": "2026-10-25T12:05:40.448088Z",
+   "finished": "2026-10-25T12:07:14.933826Z",
+   "running": "2026-10-25T12:05:41.699029Z"
+  },
+  "usage": {
+   "qpu_charge_time_seconds": 82,
+   "value": 1.362361,
+   "unit": "resource_units",
+   "status": "complete",
+   "details": [
+    {
+     "value": 1.362361,
+     "unit": "resource_units",
+     "metric": {
+      "id": "caffe3ca-729c-5750-8777-df63bbf8bfd9",
+      "value": 82
+     }
+    }
+   ]
+  },
+  "circuits_execution_time_ns": 79440023296
+ },
+ "calibration_after": {
+  "captured_at": "2026-10-25T12:07:17Z",
+  "backend": "ibm_fez",
+  "qubits": {
+   "86": {
+    "t1_us": 191.39400392775718,
+    "t2_us": 111.48936680009619,
+    "frequency_ghz": null,
+    "sx": {
+     "error": 0.0003987005979327789,
+     "duration_ns": 24.0
+    },
+    "x": {
+     "error": 0.0003987005979327789,
+     "duration_ns": 24.0
+    },
+    "rz": {
+     "error": 0.0,
+     "duration_ns": 0.0
+    },
+    "measure": {
+     "error": 0.00341796875,
+     "duration_ns": 1660.0
+    },
+    "reset": {
+     "error": null,
+     "duration_ns": 1684.0
+    },
+    "readout_error": 0.00341796875,
+    "prob_meas0_prep1": 0.005859375,
+    "prob_meas1_prep0": 0.0009765625
+   },
+   "50": {
+    "t1_us": 107.65197802491913,
+    "t2_us": 94.18784376951538,
+    "frequency_ghz": null,
+    "sx": {
+     "error": 0.0004073196821281876,
+     "duration_ns": 24.0
+    },
+    "x": {
+     "error": 0.0004073196821281876,
+     "duration_ns": 24.0
+    },
+    "rz": {
+     "error": 0.0,
+     "duration_ns": 0.0
+    },
+    "measure": {
+     "error": 0.0035400390625,
+     "duration_ns": 1660.0
+    },
+    "reset": {
+     "error": null,
+     "duration_ns": 1684.0
+    },
+    "readout_error": 0.0035400390625,
+    "prob_meas0_prep1": 0.00634765625,
+    "prob_meas1_prep0": 0.0009765625
+   },
+   "4": {
+    "t1_us": 116.88874483730815,
+    "t2_us": 104.45050775940663,
+    "frequency_ghz": null,
+    "sx": {
+     "error": 0.00029764480351117774,
+     "duration_ns": 24.0
+    },
+    "x": {
+     "error": 0.00029764480351117774,
+     "duration_ns": 24.0
+    },
+    "rz": {
+     "error": 0.0,
+     "duration_ns": 0.0
+    },
+    "measure": {
+     "error": 0.0028076171875,
+     "duration_ns": 1660.0
+    },
+    "reset": {
+     "error": null,
+     "duration_ns": 1684.0
+    },
+    "readout_error": 0.0028076171875,
+    "prob_meas0_prep1": 0.0048828125,
+    "prob_meas1_prep0": 0.000732421875
+   },
+   "130": {
+    "t1_us": 157.5798198051954,
+    "t2_us": 152.70569222532873,
+    "frequency_ghz": null,
+    "sx": {
+     "error": 0.000411455982012827,
+     "duration_ns": 24.0
+    },
+    "x": {
+     "error": 0.000411455982012827,
+     "duration_ns": 24.0
+    },
+    "rz": {
+     "error": 0.0,
+     "duration_ns": 0.0
+    },
+    "measure": {
+     "error": 0.0029296875,
+     "duration_ns": 1660.0
+    },
+    "reset": {
+     "error": null,
+     "duration_ns": 1684.0
+    },
+    "readout_error": 0.0029296875,
+    "prob_meas0_prep1": 0.005126953125,
+    "prob_meas1_prep0": 0.000732421875
+   }
+  },
+  "properties_last_update_date": "2026-10-25 12:39:07+01:00"
+ },
+ "analysis": {
+  "exact": {
+   "accuracy": 0.95,
+   "balanced_accuracy": 0.9333333333333333
+  },
+  "variant1_inference": {
+   "accuracy": 0.95,
+   "balanced_accuracy": 0.9333333333333333
+  },
+  "variant2_train_test": {
+   "accuracy": 0.975,
+   "balanced_accuracy": 0.9666666666666667
+  },
+  "kernel_r_train": 0.9983383830940159,
+  "kernel_r_test_variant1": 0.9987741648946312,
+  "mean_abs_bloch_error": 0.02293386134075495
+ }
+}

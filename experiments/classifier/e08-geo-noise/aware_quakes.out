@@ -1,0 +1,9 @@
+{'dataset': 'deep_quakes', 'seed': 200, 'device': 'fake_fez', 'variant': 'exact', 'acc': 0.8829311885612153, 'ba': 0.7753889296921948, 'cfg': "{'bw': 16.0, 'C': 62.5, 'm': 4.0, 'ct': 1000.0}"}
+{'dataset': 'deep_quakes', 'seed': 200, 'device': 'fake_fez', 'variant': 'noisy_exact_cfg', 'acc': 0.8319928507596068, 'ba': 0.6985735270271559, 'cfg': "{'bw': 16.0, 'C': 62.5, 'm': 4.0, 'ct': 1000.0}"}
+{'dataset': 'deep_quakes', 'seed': 200, 'device': 'fake_fez', 'variant': 'noisy_aware_cfg', 'acc': 0.8319928507596068, 'ba': 0.6985735270271559, 'cfg': "{'bw': 16.0, 'C': 62.5, 'm': 4.0, 'ct': 1000.0}"}
+{'dataset': 'deep_quakes', 'seed': 201, 'device': 'fake_fez', 'variant': 'exact', 'acc': 0.8811438784629133, 'ba': 0.7635207317887427, 'cfg': "{'bw': 16.0, 'C': 62.5, 'm': 4.0, 'ct': 1000.0}"}
+{'dataset': 'deep_quakes', 'seed': 201, 'device': 'fake_fez', 'variant': 'noisy_exact_cfg', 'acc': 0.8400357462019661, 'ba': 0.6944815383588168, 'cfg': "{'bw': 16.0, 'C': 62.5, 'm': 4.0, 'ct': 1000.0}"}
+{'dataset': 'deep_quakes', 'seed': 201, 'device': 'fake_fez', 'variant': 'noisy_aware_cfg', 'acc': 0.8400357462019661, 'ba': 0.6944815383588168, 'cfg': "{'bw': 16.0, 'C': 62.5, 'm': 4.0, 'ct': 1000.0}"}
+{'dataset': 'deep_quakes', 'seed': 202, 'device': 'fake_fez', 'variant': 'exact', 'acc': 0.8748882931188561, 'ba': 0.7626145804519311, 'cfg': "{'bw': 16.0, 'C': 62.5, 'm': 4.0, 'ct': 1000.0}"}
+{'dataset': 'deep_quakes', 'seed': 202, 'device': 'fake_fez', 'variant': 'noisy_exact_cfg', 'acc': 0.8293118856121537, 'ba': 0.6616049370940204, 'cfg': "{'bw': 16.0, 'C': 62.5, 'm': 4.0, 'ct': 1000.0}"}
+{'dataset': 'deep_quakes', 'seed': 202, 'device': 'fake_fez', 'variant': 'noisy_aware_cfg', 'acc': 0.8293118856121537, 'ba': 0.6616049370940204, 'cfg': "{'bw': 16.0, 'C': 62.5, 'm': 4.0, 'ct': 1000.0}"}

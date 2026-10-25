@@ -1,0 +1,56 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+.ipynb_checkpoints/
+
+# Node / Next.js
+node_modules/
+.next/
+out/
+*.tsbuildinfo
+next-env.d.ts
+
+# LaTeX
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.synctex.gz
+*.toc
+
+# OS / editors
+.DS_Store
+.idea/
+.vscode/
+
+# Local scratch
+.cache/
+*.tmp
+
+# Experiment logs are evidence: keep them (overrides the LaTeX rules above)
+!experiments/*/**/*.out
+!experiments/*/**/*.log
+
+# Qlassifier (TDD §10.1)
+qlassifier-benchmark/
+frontend/test-results/
+frontend/playwright-report/
+
+# HyperFrames demo video
+video/

@@ -1,0 +1,125 @@
+{
+  "$defs": {
+    "ErrorBody": {
+      "additionalProperties": false,
+      "description": "A typed error: ``message`` + ``hint`` are exactly the library exception's text.",
+      "properties": {
+        "code": {
+          "title": "Code",
+          "type": "string"
+        },
+        "message": {
+          "title": "Message",
+          "type": "string"
+        },
+        "hint": {
+          "title": "Hint",
+          "type": "string"
+        },
+        "status": {
+          "title": "Status",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "code",
+        "message",
+        "hint",
+        "status"
+      ],
+      "title": "ErrorBody",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "A dashboard benchmark run (one at a time).",
+  "properties": {
+    "id": {
+      "title": "Id",
+      "type": "string"
+    },
+    "dataset": {
+      "title": "Dataset",
+      "type": "string"
+    },
+    "seeds": {
+      "items": {
+        "type": "integer"
+      },
+      "title": "Seeds",
+      "type": "array"
+    },
+    "status": {
+      "enum": [
+        "running",
+        "cancelling",
+        "complete",
+        "cancelled",
+        "failed"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "done": {
+      "title": "Done",
+      "type": "integer"
+    },
+    "total": {
+      "description": "seeds × models + 1 cost task.",
+      "title": "Total",
+      "type": "integer"
+    },
+    "eta_s": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Eta S"
+    },
+    "started_at": {
+      "description": "ISO 8601 UTC.",
+      "title": "Started At",
+      "type": "string"
+    },
+    "finished_at": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Finished At"
+    },
+    "error": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ErrorBody"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "id",
+    "dataset",
+    "seeds",
+    "status",
+    "done",
+    "total",
+    "eta_s",
+    "started_at",
+    "finished_at",
+    "error"
+  ],
+  "title": "Run",
+  "type": "object",
+  "$id": "qlassifier/api/v1/run.json"
+}

@@ -1,0 +1,11 @@
+{
+  "reupload_L1_bloch_max_abs_err": 2.220446049250313e-16,
+  "reupload_L2_bloch_max_abs_err": 6.661338147750939e-16,
+  "reupload_L3_bloch_max_abs_err": 6.661338147750939e-16,
+  "reupload_L1_equals_lab_bloch_max_abs_err": 2.220446049250313e-16,
+  "riemann_bloch_max_abs_err": 3.3306690738754696e-16,
+  "riemann_product_fidelity_max_abs_err": 4.440892098500626e-16,
+  "riemann_chordal_identity_abs_err": 0.0,
+  "geo_bloch_max_abs_err": 3.3306690738754696e-16,
+  "all_ok": true
+}

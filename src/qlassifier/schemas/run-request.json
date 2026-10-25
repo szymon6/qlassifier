@@ -1,0 +1,31 @@
+{
+  "additionalProperties": false,
+  "description": "``POST /api/v1/runs`` body.",
+  "properties": {
+    "dataset": {
+      "title": "Dataset",
+      "type": "string"
+    },
+    "seeds": {
+      "anyOf": [
+        {
+          "maximum": 20,
+          "minimum": 2,
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Defaults to `qlassifier ui --seeds`.",
+      "title": "Seeds"
+    }
+  },
+  "required": [
+    "dataset"
+  ],
+  "title": "RunRequest",
+  "type": "object",
+  "$id": "qlassifier/api/v1/run-request.json"
+}

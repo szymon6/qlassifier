@@ -1,0 +1,21 @@
+{
+  "additionalProperties": false,
+  "description": "SSE ``complete`` / ``cancelled`` event data.",
+  "properties": {
+    "run_id": {
+      "title": "Run Id",
+      "type": "string"
+    },
+    "result_url": {
+      "title": "Result Url",
+      "type": "string"
+    }
+  },
+  "required": [
+    "run_id",
+    "result_url"
+  ],
+  "title": "TerminalData",
+  "type": "object",
+  "$id": "qlassifier/api/v1/terminal-data.json"
+}

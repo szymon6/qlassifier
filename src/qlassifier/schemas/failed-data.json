@@ -1,0 +1,52 @@
+{
+  "$defs": {
+    "ErrorBody": {
+      "additionalProperties": false,
+      "description": "A typed error: ``message`` + ``hint`` are exactly the library exception's text.",
+      "properties": {
+        "code": {
+          "title": "Code",
+          "type": "string"
+        },
+        "message": {
+          "title": "Message",
+          "type": "string"
+        },
+        "hint": {
+          "title": "Hint",
+          "type": "string"
+        },
+        "status": {
+          "title": "Status",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "code",
+        "message",
+        "hint",
+        "status"
+      ],
+      "title": "ErrorBody",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "SSE ``failed`` event data.",
+  "properties": {
+    "run_id": {
+      "title": "Run Id",
+      "type": "string"
+    },
+    "error": {
+      "$ref": "#/$defs/ErrorBody"
+    }
+  },
+  "required": [
+    "run_id",
+    "error"
+  ],
+  "title": "FailedData",
+  "type": "object",
+  "$id": "qlassifier/api/v1/failed-data.json"
+}

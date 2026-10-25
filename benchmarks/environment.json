@@ -1,0 +1,84 @@
+{
+  "command": "qlassifier benchmark protein_angles --noise --out benchmarks --jobs 3",
+  "versions": {
+    "qlassifier": "0.1.0",
+    "python": "3.12.0",
+    "numpy": "2.5.4",
+    "scipy": "1.18.1",
+    "scikit_learn": "1.9.1",
+    "pandas": "3.1.0",
+    "joblib": "1.6.0",
+    "qiskit": "2.6.1",
+    "qiskit_aer": "0.18.0",
+    "qiskit_ibm_runtime": "0.51.0"
+  },
+  "platform": "macOS-27.0-arm64-arm-64bit",
+  "machine": "arm64",
+  "cpu": "Apple M4",
+  "cores": 10,
+  "n_jobs": 3,
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+  ],
+  "datasets": [
+    "breast_cancer",
+    "ionosphere",
+    "sonar",
+    "heart",
+    "protein_angles"
+  ],
+  "noise": true,
+  "wall_s": {
+    "breast_cancer": 569.2,
+    "ionosphere": 81.2,
+    "sonar": 77.6,
+    "heart": 94.5,
+    "protein_angles": 1684.8
+  },
+  "per_dataset": {
+    "breast_cancer": {
+      "wall_s": 569.2,
+      "n_jobs": 10,
+      "command": "qlassifier benchmark --noise --out benchmarks",
+      "commit": "335e996"
+    },
+    "ionosphere": {
+      "wall_s": 81.2,
+      "n_jobs": 10,
+      "command": "qlassifier benchmark --noise --out benchmarks",
+      "commit": "335e996"
+    },
+    "sonar": {
+      "wall_s": 77.6,
+      "n_jobs": 10,
+      "command": "qlassifier benchmark --noise --out benchmarks",
+      "commit": "335e996"
+    },
+    "heart": {
+      "wall_s": 94.5,
+      "n_jobs": 10,
+      "command": "qlassifier benchmark --noise --out benchmarks",
+      "commit": "335e996"
+    },
+    "protein_angles": {
+      "wall_s": 1684.8,
+      "n_jobs": 3,
+      "command": "qlassifier benchmark protein_angles --noise --out benchmarks --jobs 3",
+      "commit": "d1d218c"
+    }
+  },
+  "load_avg_at_start": [
+    3.14,
+    3.52,
+    7.3
+  ]
+}

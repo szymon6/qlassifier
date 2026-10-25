@@ -1,0 +1,56 @@
+{
+  "additionalProperties": false,
+  "description": "SSE ``progress`` event data: sent after each finished task.",
+  "properties": {
+    "run_id": {
+      "title": "Run Id",
+      "type": "string"
+    },
+    "done": {
+      "title": "Done",
+      "type": "integer"
+    },
+    "total": {
+      "title": "Total",
+      "type": "integer"
+    },
+    "seed": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Seed of the finished task (null for the cost task).",
+      "title": "Seed"
+    },
+    "model": {
+      "title": "Model",
+      "type": "string"
+    },
+    "eta_s": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Eta S"
+    }
+  },
+  "required": [
+    "run_id",
+    "done",
+    "total",
+    "seed",
+    "model",
+    "eta_s"
+  ],
+  "title": "ProgressData",
+  "type": "object",
+  "$id": "qlassifier/api/v1/progress-data.json"
+}

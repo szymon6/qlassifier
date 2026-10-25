@@ -1,0 +1,62 @@
+[
+  {
+    "id": "BT-1",
+    "measured": "0.956 vs 0.677 → +27.9 pp",
+    "rule": "Breast Cancer: mean accuracy Qlassifier - ZZ QSVC >= 20 pp",
+    "status": "met"
+  },
+  {
+    "id": "BT-2",
+    "measured": "breast_cancer +37.6 pp (10/10); ionosphere +22.6 pp (10/10); sonar +27.9 pp (10/10); heart +28.3 pp (10/10); protein_angles +35.5 pp (10/10)",
+    "rule": "mean BA Qlassifier > ZZ QSVC on all 5 datasets; paired win rate >= 0.8 on each",
+    "status": "met"
+  },
+  {
+    "id": "BT-3",
+    "measured": "breast_cancer 0.948 (-2.0 pp); ionosphere 0.925 (+1.4 pp); sonar 0.824 (+1.1 pp); heart 0.816 (+1.2 pp) → 3/4",
+    "rule": "mean BA >= published - 1 pp on >= 3 of 4 UCI sets (0.968 / 0.911 / 0.813 / 0.804)",
+    "status": "met"
+  },
+  {
+    "id": "BT-4",
+    "measured": "breast_cancer 0.948 (-2.0 pp); ionosphere 0.925 (+1.4 pp); sonar 0.824 (+1.1 pp); heart 0.816 (+1.2 pp) → 3/4",
+    "rule": "mean BA >= published on >= 2 of 4 UCI sets",
+    "status": "met"
+  },
+  {
+    "id": "BT-5",
+    "measured": "qlassifier 0.878, separable 0.870, fqk_bandwidth_full 0.864, pqk 0.862, fqk_bandwidth_linear 0.856, zz_qsvc 0.587",
+    "rule": "mean BA over the 4 UCI sets: Qlassifier highest among the in-harness quantum models",
+    "status": "met"
+  },
+  {
+    "id": "BT-6",
+    "measured": "breast_cancer vs mlp: -1.3 [-3.1, +0.5] pp (tie); ionosphere vs rbf_svm: -0.2 [-3.1, +2.7] pp (tie); sonar vs mlp: +0.5 [-8.5, +9.5] pp (tie); heart vs logistic_regression: -1.0 [-3.1, +1.2] pp (tie); protein_angles vs gradient_boosting: +1.0 [-0.2, +2.2] pp (tie)",
+    "rule": "≥ 1 dataset: mean BA above every tuned classical model and corrected 95% CI of Δ vs best classical > 0 (stretch; report-only, ADR 0004)",
+    "status": "report-only"
+  },
+  {
+    "id": "BT-7",
+    "measured": "1,707 vs 2,423,299 → 1,420×",
+    "rule": "Breast Cancer: >= 100× fewer circuits than the bandwidth-tuned fidelity-kernel pipeline (incl. its search)",
+    "status": "met"
+  },
+  {
+    "id": "BT-8",
+    "measured": "breast_cancer: 4 qubits (core, ceil(8/2) = 4), 0 two-qubit gates; ionosphere: 4 qubits (core, ceil(8/2) = 4), 0 two-qubit gates; sonar: 4 qubits (core, ceil(8/2) = 4), 0 two-qubit gates; heart: 4 qubits (core, ceil(8/2) = 4), 0 two-qubit gates; protein_angles: 10 qubits (geometry, ADR 0005 limit 10), 0 two-qubit gates",
+    "rule": "per circuit on FakeTorino / FakeFez / FakeBrisbane: core encoding qubits <= ceil(d/2); geometry mode: 1 qubit per circle or (lat, lon) pair + ceil(d_plain/2) (ADR 0005); 2Q gates <= n - 1",
+    "status": "met"
+  },
+  {
+    "id": "BT-9",
+    "measured": "part A drop 0.12 / 0.12 / 0.12 pp (Torino / Fez / Brisbane); part B Qlassifier 0.8 / 0.8 / 0.8 vs FQK-bw linear 22.5 / 20.0 / 17.5 pp",
+    "rule": "Breast Cancer, 1,024 shots: mean accuracy drop <= 2 pp on each device (part A); < FQK-bw drop (part B)",
+    "status": "met"
+  },
+  {
+    "id": "BT-10",
+    "measured": "56.2 s on Apple M4 (10 cores, macOS-27.0-arm64-arm-64bit; 1-min load 1.95 at start)",
+    "rule": "`qlassifier benchmark breast_cancer`, defaults, exact, Apple M-class laptop: wall <= 120 s",
+    "status": "met"
+  }
+]

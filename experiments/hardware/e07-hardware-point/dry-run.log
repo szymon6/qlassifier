@@ -1,0 +1,4 @@
+PLAN seed 0: 300 circuits (3 PUBs x 100 parameter sets) x 1024 shots = 307,200 shots; 4 qubits, 0 two-qubit gates, depth 10, 1.63 us; QPU estimate 79-110 s (inference-only readout: 120 circuits, 33-45 s)
+  PREDICTION fake_fez: exact acc 0.875 BA 0.873; v1 acc 0.880 ± 0.010 [0.875, 0.900] BA 0.880; v2 acc 0.880 ± 0.013 BA 0.880; r_train 0.9983
+  PREDICTION fake_torino: exact acc 0.875 BA 0.873; v1 acc 0.879 ± 0.009 [0.875, 0.900] BA 0.878; v2 acc 0.880 ± 0.013 BA 0.880; r_train 0.9983
+  PREDICTION fake_brisbane: exact acc 0.875 BA 0.873; v1 acc 0.880 ± 0.010 [0.875, 0.900] BA 0.880; v2 acc 0.881 ± 0.011 BA 0.882; r_train 0.9983

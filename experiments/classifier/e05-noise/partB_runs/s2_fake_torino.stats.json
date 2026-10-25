@@ -1,0 +1,77 @@
+{
+  "fake_torino": {
+    "B-bloch_gauss-s2": {
+      "layout": [
+        60,
+        51,
+        66,
+        81
+      ],
+      "ops": {
+        "X": {
+          "rz": 16,
+          "sx": 12,
+          "measure": 4,
+          "barrier": 1
+        },
+        "Y": {
+          "rz": 16,
+          "sx": 8,
+          "measure": 4,
+          "barrier": 1
+        },
+        "Z": {
+          "rz": 24,
+          "sx": 12,
+          "measure": 4,
+          "barrier": 1
+        }
+      },
+      "depth": {
+        "X": 8,
+        "Y": 7,
+        "Z": 10
+      },
+      "two_qubit_gates": 0,
+      "e0": [
+        0.0078,
+        0.0037,
+        0.0066,
+        0.0054
+      ],
+      "e1": [
+        0.0078,
+        0.0061,
+        0.0065,
+        0.0044
+      ],
+      "circuits": 302
+    },
+    "B-fqk-tr-s2": {
+      "ops": {
+        "rz": 203,
+        "sx": 136,
+        "cz": 54,
+        "measure": 8,
+        "x": 1,
+        "barrier": 1
+      },
+      "depth": 170,
+      "circuits": 1770,
+      "two_qubit_gates": 54
+    },
+    "B-fqk-te-s2": {
+      "ops": {
+        "rz": 203,
+        "sx": 136,
+        "cz": 54,
+        "measure": 8,
+        "x": 1,
+        "barrier": 1
+      },
+      "depth": 170,
+      "circuits": 2400,
+      "two_qubit_gates": 54
+    }
+  }
+}

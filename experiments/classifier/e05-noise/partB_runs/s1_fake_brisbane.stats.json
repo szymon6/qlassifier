@@ -1,0 +1,77 @@
+{
+  "fake_brisbane": {
+    "B-bloch_gauss-s1": {
+      "layout": [
+        15,
+        124,
+        103,
+        112
+      ],
+      "ops": {
+        "X": {
+          "rz": 16,
+          "sx": 12,
+          "measure": 4,
+          "barrier": 1
+        },
+        "Y": {
+          "rz": 16,
+          "sx": 8,
+          "measure": 4,
+          "barrier": 1
+        },
+        "Z": {
+          "rz": 24,
+          "sx": 12,
+          "measure": 4,
+          "barrier": 1
+        }
+      },
+      "depth": {
+        "X": 8,
+        "Y": 7,
+        "Z": 10
+      },
+      "two_qubit_gates": 0,
+      "e0": [
+        0.0096,
+        0.0061,
+        0.0066,
+        0.0056
+      ],
+      "e1": [
+        0.0083,
+        0.0088,
+        0.0066,
+        0.0051
+      ],
+      "circuits": 302
+    },
+    "B-fqk-tr-s1": {
+      "ops": {
+        "rz": 326,
+        "sx": 192,
+        "ecr": 54,
+        "x": 10,
+        "measure": 8,
+        "barrier": 1
+      },
+      "depth": 195,
+      "circuits": 1770,
+      "two_qubit_gates": 54
+    },
+    "B-fqk-te-s1": {
+      "ops": {
+        "rz": 326,
+        "sx": 192,
+        "ecr": 54,
+        "x": 10,
+        "measure": 8,
+        "barrier": 1
+      },
+      "depth": 195,
+      "circuits": 2400,
+      "two_qubit_gates": 54
+    }
+  }
+}

@@ -1,0 +1,20 @@
+# dependencies
+/node_modules
+
+# build output (the shipped copy lives in src/qlassifier/_ui/, see scripts/build_ui.py)
+/.next/
+/out/
+*.tsbuildinfo
+next-env.d.ts
+
+# tests
+/coverage
+/test-results/
+/playwright-report/
+/blob-report/
+
+# misc
+.DS_Store
+*.pem
+npm-debug.log*
+.env*

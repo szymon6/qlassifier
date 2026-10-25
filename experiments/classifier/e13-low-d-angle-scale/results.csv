@@ -1,0 +1,15 @@
+task,rule,qlassifier,rbf_svm_default
+blobs (train acc),2/sqrt(d) (phase 7),0.82,0.97
+blobs (train acc),"2/sqrt(max(d,8)) (shipped)",0.99,0.97
+moons,2/sqrt(d) (phase 7),0.92,0.94
+moons,"2/sqrt(max(d,8)) (shipped)",0.95,0.94
+circles,2/sqrt(d) (phase 7),0.927,1.0
+circles,"2/sqrt(max(d,8)) (shipped)",0.997,1.0
+heart PCA-2,2/sqrt(d) (phase 7),0.788,0.838
+heart PCA-2,"2/sqrt(max(d,8)) (shipped)",0.821,0.838
+heart PCA-4,2/sqrt(d) (phase 7),0.818,0.835
+heart PCA-4,"2/sqrt(max(d,8)) (shipped)",0.825,0.835
+heart PCA-6,2/sqrt(d) (phase 7),0.821,0.845
+heart PCA-6,"2/sqrt(max(d,8)) (shipped)",0.828,0.845
+heart PCA-8,2/sqrt(d) (phase 7),0.828,0.838
+heart PCA-8,"2/sqrt(max(d,8)) (shipped)",0.828,0.838

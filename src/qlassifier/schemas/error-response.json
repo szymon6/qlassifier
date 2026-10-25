@@ -1,0 +1,47 @@
+{
+  "$defs": {
+    "ErrorBody": {
+      "additionalProperties": false,
+      "description": "A typed error: ``message`` + ``hint`` are exactly the library exception's text.",
+      "properties": {
+        "code": {
+          "title": "Code",
+          "type": "string"
+        },
+        "message": {
+          "title": "Message",
+          "type": "string"
+        },
+        "hint": {
+          "title": "Hint",
+          "type": "string"
+        },
+        "status": {
+          "title": "Status",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "code",
+        "message",
+        "hint",
+        "status"
+      ],
+      "title": "ErrorBody",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Body of every 4xx / 5xx response.",
+  "properties": {
+    "error": {
+      "$ref": "#/$defs/ErrorBody"
+    }
+  },
+  "required": [
+    "error"
+  ],
+  "title": "ErrorResponse",
+  "type": "object",
+  "$id": "qlassifier/api/v1/error-response.json"
+}

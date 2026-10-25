@@ -1,0 +1,3 @@
+B seed 2 bloch_gauss fake_fez 4.4s
+B seed 2 fqk_bw_linear fake_fez 1085.3s
+partB done in 1094 s

@@ -1,0 +1,622 @@
+% Qlassifier paper v1.
+% Build: tectonic docs/paper/main.tex   (or pdflatex + bibtex; ASCII source, no shell escape)
+% Every number comes from docs/paper/generated/ (python scripts/paper_tables.py), which reads the saved results in
+% benchmarks/ (see its README.md) and the research runs in experiments/.
+\documentclass[aps,pra,reprint,superscriptaddress,nofootinbib,longbibliography]{revtex4-2}
+
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{amsmath,amssymb}
+\usepackage{xcolor}
+\usepackage[colorlinks=true,linkcolor=blue!50!black,citecolor=blue!50!black,urlcolor=blue!50!black]{hyperref}
+
+\graphicspath{{figures/}}
+
+% \val{<key>}: a number written by scripts/paper_tables.py. An unknown key stops the build.
+\makeatletter
+\newcommand{\qlvalue}[2]{\expandafter\def\csname qlv@#1\endcsname{#2}}
+\newcommand{\val}[1]{\ifcsname qlv@#1\endcsname\csname qlv@#1\endcsname\else
+  \PackageError{qlassifier}{No value '#1'}{Run python scripts/paper_tables.py}\fi}
+\makeatother
+\input{generated/values}
+
+\newcommand{\ket}[1]{\lvert #1 \rangle}
+\newcommand{\pp}{\,pp}
+\newcommand{\code}[1]{\texttt{#1}}
+\newcommand{\repo}{\href{https://github.com/szymon6/qlassifier}{github.com/szymon6/qlassifier}}
+
+\begin{document}
+
+\title{Qlassifier: a product-state quantum kernel classifier with zero-circuit tuning,\\
+benchmarked against quantum and classical baselines}
+
+\author{Szymon Klisz}
+\noaffiliation
+
+\date{October 2026}
+
+\begin{abstract}
+Off-the-shelf quantum kernel classifiers often fail on real data: on the Breast Cancer data, the standard
+ZZ-feature-map quantum support vector classifier reaches an accuracy of \val{bc.zz.acc}, barely above the
+\val{bc.trivial.acc} of always predicting the majority class. We present Qlassifier, a quantum kernel
+classifier built from single-qubit product states. It encodes two standardised features per qubit, reads three Pauli
+settings per sample, applies a Gaussian kernel to the measured Bloch vectors and tunes bandwidth and margin by
+cross-validation on exact features, at zero circuit cost. An opt-in geometry mode gives each periodic column its own
+qubit circle, which turns the kernel into a seam-free product of von~Mises kernels. We compare Qlassifier with the
+standard classical and quantum baselines and four published quantum kernels, on five real datasets, under one protocol: same splits,
+same features, equal tuning budgets, \val{bc.seeds} seeds and corrected resampled $t$ statistics. Qlassifier beats the
+standard quantum baseline by \val{uci.vszz.min} to \val{uci.vszz.max}\pp\ BA on four UCI datasets, on every seed, and
+has the highest mean BA over these datasets of all quantum models in the harness. It is statistically tied with the
+best tuned classical model on every dataset. Under three IBM device noise models it loses on average at most
+\val{noise.max}\pp\ accuracy (worst seed \val{noise.worst}\pp). A first run on the IBM Heron processor
+\val{hw.backend} (\val{hw.all.seeds} seeds, \val{hw.all.qpu} QPU seconds) gives \val{hw.all.acc.min}--\val{hw.all.acc.max} accuracy on
+\val{hw.ntest}-row test subsets, against \val{hw.all.pred.min}--\val{hw.all.pred.max} predicted by the device model. Of three further
+UCI datasets, Qlassifier beats the standard baseline on two and ties it on the third. On Breast Cancer it needs \val{bc.qubits} qubits for
+\val{protocol.features} features, no two-qubit gates and \val{bc.circuitratio} times fewer circuits than a
+bandwidth-tuned fidelity-kernel pipeline (\val{bc.circuitratio.final} times fewer than its final Gram matrices alone).
+Product states are classically simulable; we make no claim of quantum advantage and report the exact classical twin
+of the geometry mode alongside it.
+\end{abstract}
+
+\maketitle
+
+% ---------------------------------------------------------------------------------------------------------------------
+\section{Introduction}
+\label{sec:intro}
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=0.92\textwidth]{wins}
+\caption{Balanced accuracy of Qlassifier against the standard quantum baseline (ZZ feature
+map QSVC) and the best tuned classical model on every dataset of this paper. Means over the protocol's seeds, whiskers
+are corrected confidence intervals. Datasets are sorted by Qlassifier's gain over the standard baseline. Spambase,
+Banknote and Haberman are the additional datasets of Sec.~\ref{sec:stage2data}. Script:
+\code{scripts/wins\_chart.py}.}
+\label{fig:wins}
+\end{figure*}
+
+Quantum kernel methods are the most common entry point to quantum machine learning on real data. The standard recipe
+is a support vector classifier on the fidelity kernel of the ZZ feature map~\cite{havlicek2018supervised}, as shipped
+by Qiskit~\cite{javadiabhari2024quantum}. On real data this recipe often collapses. In our harness it reaches a mean
+BA of \val{bc.zz.ba} on Breast Cancer, \val{iono.zz.ba} on Ionosphere, \val{sonar.zz.ba} on Sonar and \val{heart.zz.ba}
+on Heart, where 0.5 is chance (Fig.~\ref{fig:wins}).
+
+The known fixes are expensive. Tuning the input scale (the ``bandwidth'') makes fidelity kernels
+work~\cite{shaydulin2021importance,canatar2022bandwidth,egginger2023a}, but on a device each candidate bandwidth needs a
+new Gram matrix, with one circuit per pair of samples. Training the kernel itself~\cite{hubregtsen2021training,glick2021covariant} needs a new
+Gram matrix at every optimisation step. Deep entangled feature maps also lose most of their signal on today's
+hardware: the pinned ZZ circuit needs \val{bc.twoq.zz.min} to \val{bc.twoq.zz.max} two-qubit gates on
+\val{bc.qubits.zz} qubits after transpilation to IBM devices (Table~\ref{tab:cost}). Finally, well-tuned quantum kernels
+tend to behave like classical RBF kernels~\cite{florezablan2025on,bowles2024better}, and public tabular data rarely
+leaves room for a quantum edge~\cite{mancilla2026the}.
+
+Qlassifier keeps its circuits fixed and tunes only after the measurement. This paper reports:
+\begin{itemize}
+\item a product-state kernel classifier with zero-circuit self-tuning and a three-setting hardware protocol
+  (Sec.~\ref{sec:method});
+\item a geometry mode for angle-valued data, with its exact classical twin (Sec.~\ref{sec:geometry});
+\item a benchmark against the standard classical and quantum baselines and four published quantum kernels, included in
+  the library (Sec.~\ref{sec:protocol});
+\item results on accuracy, noise robustness, cost and run time, with confidence intervals (Sec.~\ref{sec:results}),
+  and the limitations (Sec.~\ref{sec:limits});
+\item a run on an IBM Heron processor, compared with a prediction written before submission
+  (Sec.~\ref{sec:hardware}), a noise sweep to \val{sweep.max} times the device error rates (Sec.~\ref{sec:sweep}) and
+  three further datasets (Sec.~\ref{sec:stage2data}).
+\end{itemize}
+The library is open source (MIT licence) at \repo. All numbers in this paper are generated from the saved benchmark
+results by a script; Sec.~\ref{sec:repro} shows how to rerun them.
+
+% ---------------------------------------------------------------------------------------------------------------------
+\section{Method}
+\label{sec:method}
+
+\subsection{Core encoding}
+Each plain feature is standardised with the mean and standard deviation of the training rows, giving $\tilde{x}$.
+Qubit $q$ carries the pair $(\tilde x_{2q}, \tilde x_{2q+1})$:
+\begin{equation}
+\ket{\psi_q(\mathbf{x})} = R_Y(c_0 \tilde x_{2q+1})\, R_X(c_0 \tilde x_{2q})\, \ket{0},
+\label{eq:encoding}
+\end{equation}
+so $d$ features need $n = \lceil d/2 \rceil$ qubits and no two-qubit gate. The angle scale $c_0 = 2/\sqrt{\max(d, 8)}$
+is fixed, not tuned. It keeps standardised values inside one period of the rotation (the cap at 8 avoids folding at
+small $d$). With $a = c_0 \tilde x_{2q}$ and $b = c_0 \tilde x_{2q+1}$, the Bloch vector of qubit $q$ is
+\begin{equation}
+\mathbf{r}_q = (\cos a \sin b,\; -\sin a,\; \cos a \cos b).
+\end{equation}
+This dense angle encoding is known~\cite{larose2020robust,stoudenmire2016supervised}; what follows is how we read it
+out and tune it.
+
+\subsection{Readout and kernel}
+Three circuits per sample measure all qubits in the $X$, $Y$ and $Z$ bases, which gives $F(\mathbf{x}) =
+(\mathbf{r}_1, \dots, \mathbf{r}_n) \in \mathbb{R}^{3n}$. The kernel is Gaussian on these features:
+\begin{equation}
+k(\mathbf{x}, \mathbf{x}') = e^{-\gamma \lVert F(\mathbf{x}) - F(\mathbf{x}') \rVert^2}
+= \prod_{q=1}^{n} e^{-4\gamma\, [1 - f_q(\mathbf{x}, \mathbf{x}')]},
+\label{eq:kernel}
+\end{equation}
+where $f_q = (1 + \mathbf{r}_q \cdot \mathbf{r}'_q)/2$ is the single-qubit fidelity, $\gamma = g\, \gamma_0$ and
+$\gamma_0 = 1/\sum_k \mathrm{Var}(F_k)$ over the training rows. This is a projected quantum
+kernel~\cite{huang2020power} on a product state, or equivalently a tempered fidelity kernel. A support vector machine
+uses the precomputed Gram matrix. For small angles $\lVert F(\mathbf{x}) - F(\mathbf{x}') \rVert^2 \approx c_0^2
+\lVert \tilde{\mathbf{x}} - \tilde{\mathbf{x}}' \rVert^2$, so the core kernel is close to an RBF kernel. This explains
+the ties with RBF-SVM below.
+
+\subsection{Self-tuning at zero circuits}
+The two hyperparameters act after the measurement: $g$ scales the kernel width and $C$ the margin. Qlassifier therefore
+tunes them on exact (closed-form) features and never runs a circuit to tune. It uses \val{protocol.folds}-fold stratified
+cross-validation on the training rows, scored by balanced accuracy, over a ridge-following
+grid~\cite{keerthi2003asymptotic}: $g \in \{4^{-3}, \dots, 4^{2}\}$ and $C = \tilde C / g$ with $\tilde C \in
+\{10^{-1}, \dots, 10^{3}\}$, \val{protocol.configs} configurations in total. Ties go to the first configuration in grid
+order. A device measures only the final features of the training and test rows. Probabilities come from a Platt
+sigmoid fitted on out-of-fold decision values.
+
+\subsection{Geometry mode for angle-valued data}
+\label{sec:geometry}
+Some columns are angles: dihedral angles, wind directions, times of day, longitudes. A periodic column $x$ with period
+$P$ gets its own qubit, $\ket{\psi(x)} = R_Y(t)\ket{0}$ with $t = 2\pi x/P$, so $\mathbf{r} = (\sin t, 0, \cos t)$.
+The kernel factor of that qubit is
+\begin{equation}
+e^{-\gamma \lVert \mathbf{r} - \mathbf{r}' \rVert^2} = e^{-2\gamma\, [1 - \cos(t - t')]},
+\end{equation}
+a von~Mises kernel with concentration $2\gamma$~\cite{sra2016directional,pewsey2020recent}. It has no seam: $359^\circ$
+and $1^\circ$ are neighbours. A (latitude, longitude) pair maps to one qubit with $R_Z(\varphi) R_Y(\theta)$,
+$\theta = 90^\circ - \text{latitude}$, $\varphi = \text{longitude}$; its Bloch vector is the direction itself and its
+kernel factor is a von~Mises--Fisher kernel on the sphere.
+
+Two circles cannot share a qubit. The map of Eq.~(\ref{eq:encoding}) sends $(a, b)$ and $(\pi - a, b + \pi)$ to the same
+Bloch vector, because the torus does not embed in the sphere. Geometry mode therefore uses one qubit per circle, more
+than the $\lceil d/2 \rceil$ of the core encoding, and our hardware target counts it by this rule
+(Sec.~\ref{sec:limits}). It is still free of two-qubit gates.
+
+\textit{Classical twin.} When every column is angular, the geometry-mode Gram matrix equals that of an RBF kernel on
+hand-made features: $(\sin t, \cos t)$ per circle and the unit vector per direction. Both give the same squared
+distances, and the zero-variance $Y$ components leave $\gamma_0$ unchanged. The library tests this identity to
+$10^{-12}$. Any gain of geometry mode therefore comes from the geometric prior, which a classical model can also use through
+feature engineering. We report the twin next to every geometry-mode result.
+
+\subsection{Execution on devices}
+The \code{backend} parameter selects where Bloch vectors come from: the closed form (\code{"exact"}, the default),
+binomial shot sampling of each Pauli expectation (\code{"shots"}, the exact law for product states) or the noise models
+of IBM devices (\code{"fake\_torino"}, \code{"fake\_fez"}, \code{"fake\_brisbane"}: Heron r1, Heron r2 and Eagle r3,
+simulated with Qiskit Aer). Circuits are transpiled once at optimisation level 3; the $X$ and $Y$ circuits reuse the
+physical qubits chosen for the $Z$ circuit. Each component is estimated as $1 - 2P(1)$ from \val{noise.shots} shots, and
+each measured Bloch vector is renormalised to unit length, a per-qubit mitigation that costs no extra circuit. The
+circuits are product states, and the device noise models act qubit by qubit: single-qubit gate errors and readout
+errors, no crosstalk, no idle noise. So the library simulates each qubit alone, on the physical qubit that the
+full-register transpilation chose, at a cost linear in the number of qubits. This reproduces the full-register
+marginals exactly: over \val{e14.marginals} marginals the largest difference was \val{e14.maxdiff} (experiment e14 in
+the repository). The library checks these conditions at run time and otherwise simulates
+the full register.
+
+\subsection{Resources}
+Per circuit, the core encoding needs $\lceil d/2 \rceil$ qubits (\val{bc.qubits} for $d = 8$), no two-qubit gate and a
+transpiled depth of \val{bc.depth} on the three devices. Training and prediction need 3 circuits per sample:
+\val{bc.circuits} circuits for the \val{bc.rows} Breast Cancer rows. Tuning needs none. Classically, the Gram matrix
+costs $O(N^2 n)$ time and $N^2$ memory.
+
+% ---------------------------------------------------------------------------------------------------------------------
+\section{Benchmark protocol}
+\label{sec:protocol}
+
+The benchmark follows the fair-comparison rules of the Qiskit Fall Fest 2026 QML challenge and was fixed before the
+method search (\code{experiments/classifier/README.md}, Sec.~2, in the repository). It ships inside the library: \code{qlassifier benchmark}
+reruns it.
+
+\textit{Data.} Table~\ref{tab:datasets} lists the five bundled datasets: four UCI
+datasets~\cite{street1993nuclear,sigillito1989classification,gorman1988analysis,detrano1989international} and protein
+backbone dihedral angles from the Protein Data Bank~\cite{berman2000protein}. The protein task asks whether residue $i$
+lies in a $\beta$-strand, from the $(\phi, \psi)$ angles of residues $i-2$ to $i+2$. The positive class is always the
+minority class.
+
+\begin{table*}[t]
+\centering
+\caption{Bundled datasets. UCI sets: every model gets the same \val{protocol.features} PCA features, fitted inside every
+training fold. Protein: every model gets the same \val{protein.features} raw angles; geometry mode declares them as
+circles of period $360^\circ$. Chain-grouped splits keep every protein chain on one side of each split.}
+\label{tab:datasets}
+{\small\input{generated/datasets}}
+\end{table*}
+
+\textit{Splits.} Seeds 0 to \val{protocol.seed.last}: one stratified \val{protocol.testshare}\% test split per seed
+(protein: grouped by PDB chain), identical for every model. All preprocessing is fitted on training rows only.
+
+\textit{Models.} Majority class; logistic regression, RBF-SVM, random forest, histogram gradient boosting and an MLP
+(scikit-learn~\cite{pedregosa2012scikitlearn}); the pinned standard quantum baseline, a QSVC on the fidelity kernel of
+the ZZ feature map (2 repetitions, full entanglement, inputs scaled to $[0, \pi]$); four published quantum kernels
+re-implemented under the same protocol: the bandwidth-tuned fidelity kernel with full and linear
+entanglement~\cite{shaydulin2021importance,canatar2022bandwidth}, the projected quantum kernel~\cite{huang2020power}
+and the separable kernel~\cite{bowles2024better}; Qlassifier; and on the protein data the classical twin as a control.
+Exact simulation is used for every quantum model in the leaderboard.
+
+\textit{Tuning.} Every tuned model gets \val{protocol.configs} configurations, scored by \val{protocol.folds}-fold
+cross-validation on balanced accuracy inside the training split, then refits on the whole training split. The pinned ZZ
+baseline keeps its \val{protocol.configs.zz} values of $C$. No test label is seen before the final evaluation.
+
+\textit{Statistics.} Repeated random splits overlap, so a plain $t$-test over seeds is anti-conservative. Every interval
+is a corrected resampled $t$ interval~\cite{nadeau2003inference},
+\begin{equation}
+\mathrm{SE} = s \sqrt{1/J + n_\text{test}/n_\text{train}},
+\end{equation}
+with $J$ seeds and $J-1$ degrees of freedom. Paired differences (Qlassifier minus a model) use the same correction. A
+model is ``tied with the best'' when the \val{protocol.cilevel}\% interval of its paired difference to the top model
+contains 0. The best classical model is chosen after the fact, which is conservative for a quantum claim. The paired
+intervals (one per model and dataset) are reported without a multiple-comparison correction: they describe ties, not
+discoveries, and each target rests on one pre-registered test (the earlier protein tests used Bonferroni-corrected
+intervals, Table~\ref{tab:history}). Reading a tie from an uncorrected interval is conservative for a quantum win.
+
+\textit{Grid edges.} Equal effort is counted in configurations, not seconds. The chosen configuration sits on an edge of
+the grid for at least half the seeds for \val{edge.list} (share of seeds, datasets); Qlassifier's largest share is
+\val{edge.qlassifier.max} (\val{edge.qlassifier.where}). The budget is equal, but a wider grid could move these
+models, in either direction; the per-seed edge flag is in every \code{runs.csv}.
+
+\textit{Noise study.} Part A runs Qlassifier on every dataset (all rows, seeds \val{noise.a.first} to
+\val{noise.a.last}) on the shot sampler and the three device models. Part B compares Qlassifier with the bandwidth-tuned fidelity kernel (linear), the projected kernel and
+the separable kernel on identical Breast Cancer subsets (\val{noise.b.ntrain} training and \val{noise.b.ntest} test
+rows, \val{noise.b.seeds} seeds), because fidelity kernels need one circuit per pair of rows. Hyperparameters come
+from exact-mode tuning; nothing is re-tuned on noisy data.
+
+\textit{Cost study.} Each quantum model's circuit is transpiled to the three devices (median of 3 transpiler seeds).
+Circuit counts cover training and prediction at the chosen configuration, plus, for models whose hyperparameters change
+the circuit, the on-device bandwidth search.
+
+\textit{Targets.} Ten targets, BT-1 to BT-10, were fixed before the benchmark ran. The library
+evaluates them from the saved results (Table~\ref{tab:targets}).
+
+% ---------------------------------------------------------------------------------------------------------------------
+\section{Results}
+\label{sec:results}
+
+\begin{table*}[t]
+\centering
+\caption{Balanced accuracy, mean $\pm$ standard deviation over \val{bc.seeds} seeds. Bold: top mean per dataset.
+$^{\approx}$: statistically tied with the top model (corrected \val{protocol.cilevel}\% CI of the paired difference
+contains 0). The classical twin exists only for the geometry-mode dataset.}
+\label{tab:leaderboard}
+{\small\input{generated/leaderboard}}
+\end{table*}
+
+\begin{table*}[t]
+\centering
+\caption{Qlassifier against the standard quantum baseline and the best tuned classical model. $\Delta$ = Qlassifier
+minus the other model, in percentage points (pp), with corrected \val{protocol.cilevel}\% CIs; wins = seeds on which
+Qlassifier is higher.}
+\label{tab:comparisons}
+{\footnotesize\input{generated/comparisons}}
+\end{table*}
+
+\subsection{Against the standard quantum baseline}
+Qlassifier beats the pinned ZZ QSVC on every dataset and every seed (Table~\ref{tab:comparisons}): by
+\val{uci.vszz.min} to \val{uci.vszz.max}\pp\ BA on the four UCI datasets and by \val{protein.vszz}\pp\ on the protein
+angles. On Breast Cancer the accuracy rises from \val{bc.zz.acc} to \val{bc.acc} (BT-1). The ZZ baseline is not
+broken by a bug. Its input scale is fixed, so on \val{bc.qubits.zz} qubits its kernel matrix is close to the identity
+on real data, and tuning $C$ cannot repair that~\cite{shaydulin2021importance,canatar2022bandwidth}.
+
+\subsection{Against other quantum models}
+Averaged over the four UCI datasets, Qlassifier has the highest mean BA of the six quantum models in the harness
+(\val{uci.mean.qlassifier}; next: \val{uci.mean.runnerup}, \val{uci.mean.runnerup.ba}; BT-5). The differences between
+the good quantum kernels are small and mostly inside the CIs.
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=0.62\textwidth]{breast_cancer-leaderboard}
+\caption{Breast Cancer leaderboard: per-seed BA (dots), corrected \val{protocol.cilevel}\% CI (bar) and mean (marker) for every model.
+Qlassifier (vermillion) sits inside the band tied with the best, far above the ZZ QSVC.}
+\label{fig:bc}
+\end{figure*}
+
+\subsection{Against tuned classical models}
+On every dataset Qlassifier is statistically tied with the best tuned classical model (Table~\ref{tab:comparisons}).
+The mean differences range from \val{all.vsbest.min} to \val{all.vsbest.max}\pp. With \val{bc.seeds} seeds and test
+sets of \val{all.ntest.min} to \val{all.ntest.max} rows, the corrected \val{protocol.cilevel}\% half-widths of these differences are
+\val{all.halfwidth.min} to \val{all.halfwidth.max}\pp, so differences of about one point cannot be resolved. Ties are
+the expected outcome on generic tabular data, as the small-angle limit of Eq.~(\ref{eq:kernel}) predicts.
+
+\subsection{Geometry mode on protein angles}
+\label{sec:protein}
+On the protein angles, geometry mode ranks \val{protein.rank} by mean BA (\val{protein.ba} $\pm$ \val{protein.ba.sd}).
+Its difference to the best tuned classical model, \val{protein.best}, is \val{protein.vsbest}\pp\ (\val{protocol.cilevel}\% CI
+\val{protein.vsbest.ci}, \val{protein.vsbest.wins} seeds): \val{protein.vsbest.word}. Against RBF-SVM the difference is
+\val{protein.vs.rbfsvm}\pp\ (CI \val{protein.vs.rbfsvm.ci}), against logistic regression
+\val{protein.vs.logisticregression}\pp\ (CI \val{protein.vs.logisticregression.ci}). Its classical twin scores
+\val{protein.twin.ba}: \val{protein.twin.identical}. The protein data was chosen in an earlier search, so these seeds
+are a confirmation run; Table~\ref{tab:history} lists every look at this question, including the leaky residue-level
+split that first suggested a significant win.
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=0.62\textwidth]{protein_angles-leaderboard}
+\caption{Protein backbone angles (chain-grouped splits): leaderboard as in Fig.~\ref{fig:bc}. The classical twin
+(grey) computes the same Gram matrix as geometry mode from hand-made $(\sin, \cos)$ features.}
+\label{fig:protein}
+\end{figure*}
+
+\begin{table*}[t]
+\centering
+\caption{The tuned-classical target (BT-6) on protein data, every run. Geometry mode minus the best classical model,
+in pp. e07: residue-level splits, which share protein chains between training and test. e11, e12: chain-grouped,
+pre-registered; e12 used Bonferroni-corrected \val{e12.div6.level}\% CIs for its two hypotheses. This paper: the run reported here.}
+\label{tab:history}
+{\small\input{generated/history}}
+\end{table*}
+
+\subsection{Noise}
+Table~\ref{tab:noise} gives the accuracy lost from exact simulation to each noise model (positive: lost; negative:
+gained). Over the five datasets and three device models, Qlassifier's mean change lies between \val{noise.min} and
+\val{noise.max}\pp, and its kernel keeps a Pearson correlation of at least \val{noise.r.min} with the exact kernel.
+On the paired Part~B subsets, at \val{noise.shots} shots, the bandwidth-tuned fidelity kernel loses \val{bc.noiseb.fqk.min} to
+\val{bc.noiseb.fqk.max}\pp, the separable kernel up to \val{bc.noiseb.separable.max}\pp, and Qlassifier at most
+\val{bc.noiseb.qlassifier.max}\pp\ (BT-9). Most of the fidelity kernel's loss is sampling noise, not gate error: with
+device noise switched off it already loses \val{sweep.fqk.drop0}\pp\ (Sec.~\ref{sec:sweep}). These are means over seeds; the worst single seed lost
+\val{noise.worst}\pp\ in Part~A (\val{noise.worst.dataset}) and \val{bc.noiseb.qlassifier.worst}\pp\ in Part~B.
+Fig.~\ref{fig:noise} shows Breast Cancer.
+
+On Breast Cancer the three device models give the same mean loss,
+\val{bc.noise.torino} / \val{bc.noise.fez} / \val{bc.noise.brisbane}\pp: with \val{noise.shots} shots and a shared
+sampler seed, their estimates coincide to the flip, so device differences on this data lie below the shot resolution.
+An earlier run of the same study, which simulated the whole register, measured \val{e05.torino} /
+\val{e05.fez} / \val{e05.brisbane}\pp\ (e05 in the repository). The shipped run samples each qubit alone and draws a
+different random stream from the simulator, so the two differ by one shot-noise resampling; both stay below
+\val{e05.max}\pp.
+
+\begin{table*}[t]
+\centering
+\caption{Accuracy lost under noise, in pp: mean over seeds (worst seed in brackets); \val{noise.shots} shots.
+Part A: Qlassifier on all rows, \val{noise.a.seeds} seeds. Part B: four quantum models on identical Breast Cancer
+subsets. Kernel $r$: lowest mean Pearson correlation of the noisy and exact kernels over the noise models.}
+\label{tab:noise}
+{\small\input{generated/noise}}
+\end{table*}
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=0.7\textwidth]{breast_cancer-noise}
+\caption{Accuracy lost from exact simulation to shot noise and three IBM device noise models, Breast Cancer. Thick
+line: Qlassifier on all rows (Part A). Thin lines: the Part~B subsets.}
+\label{fig:noise}
+\end{figure*}
+
+\subsection{Noise scaled beyond the device}
+\label{sec:sweep}
+We scaled every error channel of the FakeFez model (gate and
+readout errors multiplied by $s$, $T_1$ and $T_2$ divided by $s$) for $s \in \{\val{sweep.scales}\}$ and reran Breast
+Cancer at \val{noise.shots} shots. Qlassifier's mean accuracy loss is \val{sweep.q.drop1}\pp\ at $s = 1$ and
+\val{sweep.q.drop3}\pp\ at $s = \val{sweep.max}$ (worst seed \val{sweep.q.drop1.worst}\pp; \val{sweep.a.seeds} seeds,
+all rows), and its kernel keeps $r = \val{sweep.q.r3}$ with the exact kernel at $s = \val{sweep.max}$. On the paired
+subsets (\val{sweep.b.seeds} seeds) the mean accuracy over the sweep is \val{sweep.auc.q} for Qlassifier,
+\val{sweep.auc.fqk} for the bandwidth-tuned fidelity kernel and \val{sweep.auc.zz} for the ZZ baseline
+(\val{sweep.zz.seeds} seeds at $s \in \{0, 1, 3\}$), Fig.~\ref{fig:sweep}. The fidelity kernel loses
+\val{sweep.fqk.drop0}\pp\ already at $s = 0$, from \val{noise.shots}-shot sampling alone, and \val{sweep.fqk.drop3}\pp\ at
+$s = \val{sweep.max}$: its noise loss is mostly shot noise, the price of estimating one fidelity per pair of samples. The
+ZZ classifier stays at the majority class throughout while its kernel correlation with the exact kernel falls from
+\val{sweep.zz.r0} to \val{sweep.zz.r3}. Qlassifier's curve is flat because, for depth-\val{hw.depth} single-qubit circuits,
+device noise lies far below the shot resolution. A scaled noise model does not replace a hardware run
+(Sec.~\ref{sec:hardware}).
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{breast_cancer-noise-sweep}
+\caption{Accuracy vs noise scale $s$ (FakeFez error rates $\times s$), Breast Cancer paired subsets, \val{noise.shots}
+shots. Dashed: exact simulation.}
+\label{fig:sweep}
+\end{figure}
+
+\subsection{On a real quantum processor}
+\label{sec:hardware}
+On \val{hw.date} we ran Qlassifier on \val{hw.backend}, an IBM \val{hw.family} processor, through Qiskit Runtime (job
+\code{\val{hw.jobid}}, \val{hw.time}). The task is the Part~B Breast Cancer subset of seed 0 (\val{hw.ntrain} training and
+\val{hw.ntest} test rows). Training, tuning and the exact prediction used the simulator; the device measured the Bloch
+readout of all \val{hw.ntrain} + \val{hw.ntest} rows: \val{hw.circuits} circuits (three Pauli settings per row) at
+\val{hw.shots} shots, \val{hw.totalshots} shots in all. The circuits use \val{hw.qubits} physical qubits (\val{hw.layout}),
+depth \val{hw.depth} and \val{hw.twoq} two-qubit gates after transpilation; Table~\ref{tab:hardware} gives their
+calibration at submission. The job was billed \val{hw.qpu} QPU seconds (\val{hw.qpu.percircuit} s per circuit), inside
+the \val{hw.qpu.low}--\val{hw.qpu.high} s predicted by our QPU cost model, which brackets the
+published per-circuit timings of Table~\ref{tab:cost}'s sources as well.
+
+Before submission we wrote down the FakeFez model's prediction for this exact subset: accuracy \val{hw.pred} $\pm$
+\val{hw.pred.sd} over \val{hw.pred.draws} shot-noise draws (range \val{hw.pred.min}--\val{hw.pred.max}; exact simulation \val{hw.exact}),
+and the pass rule, within 2\pp\ of the prediction. The hardware gave accuracy \val{hw.acc} (\val{hw.correct} of
+\val{hw.ntest} rows; balanced accuracy \val{hw.ba}), \val{hw.delta}\pp\ above the prediction and at the top of its
+shot-noise range. The measured kernel correlates with the exact one at $r = \val{hw.r}$ (training block
+\val{hw.r.train}), and the mean Bloch-vector error is \val{hw.bloch} against \val{hw.bloch.pred} simulated. The result is
+consistent with the prediction. We then ran \val{hw.all.later} more seeds of the same design
+on the same device (Table~\ref{tab:hwseeds}); their predictions were computed by the same procedure after the runs,
+so they are checks, not pre-registered tests. Over all \val{hw.all.seeds} seeds the hardware accuracy is
+\val{hw.all.acc.min}--\val{hw.all.acc.max} (mean \val{hw.all.acc.mean}) against predictions of
+\val{hw.all.pred.min}--\val{hw.all.pred.max} (mean \val{hw.all.pred.mean}); \val{hw.all.pass} of \val{hw.all.seeds}
+seeds lie within 2\pp\ of their prediction and \val{hw.all.inrange} inside the shot-noise range; the mean deviation is
+\val{hw.all.delta.mean}\pp\ (largest \val{hw.all.delta.absmax}\pp), the kernel correlation at least \val{hw.all.r.min},
+and the whole study cost \val{hw.all.qpu} QPU seconds. The evidence is limited to a single device and calibration day, with
+\val{hw.ntest} test rows per seed, so one row is \val{hw.rowpp}\pp\ and the pass rule is a one-row tolerance. The full
+records (job ids, timestamps, transpiled circuits, raw counts, calibration before and after) are in the repository
+(Sec.~\ref{sec:repro}).
+
+\begin{table*}[t]
+\centering
+\caption{Every real-device run on \val{hw.backend}: the pre-registered seed 0 and the later seeds. Predicted = FakeFez
+device model (mean $\pm$ sd over shot-noise draws); $\Delta$ = hardware $-$ predicted; kernel $r$ = correlation of the
+measured test kernel with the exact one.}
+\label{tab:hwseeds}
+{\small\input{generated/hardware-seeds}}
+\end{table*}
+
+\begin{table}[t]
+\centering
+\caption{Physical qubits of the \val{hw.backend} run and their calibration at submission (\val{hw.date}).}
+\label{tab:hardware}
+{\small\input{generated/hardware}}
+\end{table}
+
+\subsection{Three more datasets}
+\label{sec:stage2data}
+We ran the same protocol (same splits, features, tuning budgets and \val{bc.seeds} seeds) on three more UCI
+datasets (Table~\ref{tab:stage2}). On Spambase
+(\val{s2.spambase.rows} rows) Qlassifier reaches BA \val{s2.spambase.q} against \val{s2.spambase.zz} for the ZZ baseline
+(\val{s2.spambase.vszz}\pp, CI \val{s2.spambase.vszz.ci}, \val{s2.spambase.vszz.wins} seeds); on
+Banknote \val{s2.banknote.q} against \val{s2.banknote.zz} (\val{s2.banknote.vszz}\pp). Both tie the best classical model (\val{s2.spambase.vsbest}\pp\ vs \val{s2.spambase.best}, CI
+\val{s2.spambase.vsbest.ci}; \val{s2.banknote.vsbest}\pp\ vs \val{s2.banknote.best}), but on Spambase the MLP is ahead
+of Qlassifier by a small, significant margin (\val{s2.spambase.vsmlp}\pp, CI \val{s2.spambase.vsmlp.ci}): a tie with the
+best model does not mean a tie with every model. On Haberman (\val{s2.haberman.rows} rows) every model lands between
+\val{s2.haberman.q} and \val{s2.haberman.best.ba}, and every pair of models
+ties. The ZZ margin is dataset-specific: \val{s2.spambase.vszz} and \val{s2.banknote.vszz}\pp\ here
+against \val{uci.vszz.min} to \val{uci.vszz.max}\pp\ on the first four datasets. These datasets are not bundled in the
+released library yet; the results come from the research scripts in the repository.
+
+\begin{table*}[t]
+\centering
+\caption{Three more UCI datasets under the same protocol (balanced accuracy, mean $\pm$ sd over \val{bc.seeds} seeds;
+corrected CIs).}
+\label{tab:stage2}
+{\small\input{generated/stage2-datasets}}
+\end{table*}
+
+\subsection{Cost and time}
+On Breast Cancer, Qlassifier needs \val{bc.circuits} circuits to train and predict. The bandwidth-tuned fidelity-kernel
+pipeline needs \val{bc.circuits.fqkpipeline}, mostly for its on-device bandwidth search: \val{bc.circuitratio} times
+more (BT-7; Table~\ref{tab:cost}, Fig.~\ref{fig:cost}). Counting only its final Gram matrices, without the search,
+the pipeline needs \val{bc.circuits.fqkfinal} circuits, \val{bc.circuitratio.final} times Qlassifier's; both readings
+hold. The projected kernel matches Qlassifier's circuit count but needs two-qubit gates. The full Breast Cancer leaderboard (\val{bc.seeds} seeds, \val{bc.models} models) runs in \val{bt10.wall}\,s
+on an \val{bt10.cpu} laptop with \val{bt10.cores} cores (BT-10). There, tuning Qlassifier over its
+\val{protocol.configs} configurations takes a median of \val{bc.time.tune}\,s per split, and the final fit
+\val{bc.time.fit}\,s.
+
+\begin{table*}[t]
+\centering
+\caption{Breast Cancer cost study: qubits, two-qubit gates and depth per circuit after transpilation to IBM FakeTorino,
+FakeFez and FakeBrisbane, and circuits to train and predict ($N_\text{train} = \val{bc.ntrain}$,
+$N_\text{test} = \val{bc.ntest}$). Fidelity kernels need one circuit per pair of rows; models whose hyperparameters
+change the circuit also pay for the on-device search.}
+\label{tab:cost}
+{\small\input{generated/cost}}
+\end{table*}
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=0.9\textwidth]{breast_cancer-cost}
+\caption{Breast Cancer cost per quantum model: circuits to train and predict (log scale; hatched: on-device tuning),
+qubits, and two-qubit gates per circuit on FakeTorino.}
+\label{fig:cost}
+\end{figure*}
+
+\subsection{Targets}
+Table~\ref{tab:targets} lists the ten targets as the library evaluates them: \val{targets.met} are met and
+\val{targets.reportonly} is report-only (\val{targets.reportonly.ids}). BT-6 (beat every tuned classical model with a
+CI above zero) is report-only: it was missed under the strict protocol before this run (Table~\ref{tab:history}), and
+by our pre-registered rule no later run can upgrade it. BT-8 is met on the core datasets (qubits
+$\leq \lceil d/2 \rceil$, no two-qubit gates) and on the protein angles, where geometry mode uses \val{protein.qubits}
+qubits for \val{protein.features} angles: the $\lceil d/2 \rceil$ bound applies to the core encoding, and geometry mode
+is judged by one qubit per circle or direction (Sec.~\ref{sec:limits}).
+
+\begin{table*}[t]
+\centering
+\caption{Benchmark targets BT-1 to BT-10 as evaluated by \code{qlassifier benchmark} (\code{targets.json}).}
+\label{tab:targets}
+{\small\input{generated/targets}}
+\end{table*}
+
+% ---------------------------------------------------------------------------------------------------------------------
+\section{Related work and novelty}
+\label{sec:related}
+
+\textit{Known parts.} Dense angle encoding~\cite{larose2020robust} and trigonometric product feature
+maps~\cite{stoudenmire2016supervised}; projected quantum kernels~\cite{huang2020power}; product and separable kernels as
+strong baselines~\cite{bowles2024better,shin2025new}; the role of the bandwidth~\cite{shaydulin2021importance,%
+canatar2022bandwidth,egginger2023a,florezablan2025on}; the Fourier view of angle
+encodings~\cite{schuld2020the,repetto2026expressivity}; symmetry-aware and geometric
+models~\cite{glick2021covariant,meyer2022exploiting,ragone2022representation,li2024enforcing}; stereographic Bloch
+embeddings~\cite{jasso2023quantum}; directional statistics and torus methods for dihedral
+angles~\cite{sra2016directional,pewsey2020recent,eltzner2015torus,wiechers2021clustering}; noise rescaling of quantum
+kernels~\cite{haug2021quantum,hubregtsen2021training} and Pauli decompositions of fidelity kernels~\cite{gan2023a}; and
+structure-aware encodings that beat tuned RBF on
+synthetic or simulated data~\cite{wang2026structured,frohnert2026taskaligned}.
+
+\textit{What is new here.} (i) The design rule: circuit angles fixed by the data scale or by the declared geometry,
+bandwidth and margin tuned only after measurement. It costs zero tuning circuits and keeps the device noise loss small.
+(ii) Geometry mode: one qubit per circle or direction, no aliasing, with the exact classical twin
+reported next to it. (iii) The hardware protocol: three local-Pauli settings per sample ($O(N)$ circuits) with
+per-qubit unit renormalisation. (iv) A benchmark of all of this against every challenge baseline on real data, with
+leakage-safe splits, corrected statistics and the negative results kept (Sec.~\ref{sec:limits}). We found no prior
+applied QML on protein dihedral angles with angle-native encodings.
+
+% ---------------------------------------------------------------------------------------------------------------------
+\section{Limitations}
+\label{sec:limits}
+
+\begin{itemize}
+\item \textit{No quantum advantage.} Qlassifier prepares product states, which a classical computer simulates exactly;
+  the library's default mode does just that. In geometry mode the classical twin reproduces the kernel by construction.
+  Our results are measured gains over quantum baselines and ties with classical ones.
+\item \textit{BT-6 missed.} We did not beat every tuned classical model on any dataset under a leakage-safe protocol.
+  A residue-level split showed \val{e07.vsbest}\pp\ (CI \val{e07.vsbest.ci}) over \val{e07.best}, but it shares
+  protein chains between training and test. Under chain-grouped splits the margin shrank to \val{e11.vsbest}\pp\ (CI
+  \val{e11.vsbest.ci}), and two pre-registered tests on \val{protein.chains} chains gave \val{e12.div6.vsbest}\pp\ (\val{e12.div6.level}\% CI
+  \val{e12.div6.vsbest.ci}) and \val{e12.div10.vsbest}\pp\ (\val{e12.div10.level}\% CI \val{e12.div10.vsbest.ci}).
+\item \textit{A loss: global earthquakes.} On \val{quakes.rows} earthquakes labelled by depth from their latitude and
+  longitude (USGS), geometry mode lost to \val{quakes.best} by \val{quakes.vsbest}\pp\ (CI \val{quakes.vsbest.ci}),
+  although it beat RBF-SVM by \val{quakes.vsrbf}\pp. A wider kernel grid closed part of the gap
+  (\val{quakes.wide.vsrf}\pp, CI \val{quakes.wide.vsrf.ci}). Trees adapt to the uneven density of subduction zones;
+  one global kernel width does not. The narrow kernels this task needs also need far more than \val{noise.shots} shots.
+\item \textit{Limited hardware evidence.} Beyond the device models we have \val{hw.all.seeds} real runs
+  (Sec.~\ref{sec:hardware}) on one device under one day's calibration, \val{hw.ntest} test rows each; only the first
+  was pre-registered. The device models have no crosstalk, drift or leakage,
+  no idle noise and symmetric readout errors; the per-qubit simulation is exact only under these assumptions. At
+  \val{noise.shots} shots the simulated study cannot rank the three devices (Sec.~\ref{sec:results}).
+\item \textit{The fidelity kernel's loss is mostly shot noise.} Its \val{bc.noiseb.fqk.min}--\val{bc.noiseb.fqk.max}\pp\
+  loss under device models is \val{sweep.fqk.drop0}\pp\ with device noise off (Sec.~\ref{sec:sweep}); Qlassifier's advantage
+  over it comes from shot efficiency: three settings per sample instead of one fidelity per pair.
+\item \textit{The ZZ margin varies.} On Spambase and Banknote the lead over the ZZ baseline is \val{s2.spambase.vszz}
+  and \val{s2.banknote.vszz}\pp, not tens of points, and on Haberman every model ties (Sec.~\ref{sec:stage2data}).
+\item \textit{Not in the library yet.} The hardware run, the noise sweep and the three extra datasets are research
+  results with scripts in the repository; the released library has no hardware backend or noise-sweep API (it does
+  benchmark a user's CSV file under the same protocol). They are planned for a later release.
+\item \textit{More qubits in geometry mode.} Geometry mode uses one qubit per circle, above the $\lceil d/2 \rceil$
+  of the core encoding (\val{protein.qubits} qubits for the \val{protein.features} protein angles), because two
+  circles cannot share a qubit (Sec.~\ref{sec:geometry}). The hardware target counts geometry mode by this rule;
+  the circuits stay free of two-qubit gates, so the device cost per circuit is unchanged.
+\item \textit{Small data, wide intervals.} The UCI test sets hold \val{uci.ntest.min} to \val{uci.ntest.max} rows. With \val{bc.seeds} seeds, the
+  corrected CIs are wide.
+\item \textit{Scope.} Binary classification of tabular data with up to \val{limit.trainrows} training rows (the Gram
+  matrix is $N \times N$).
+\end{itemize}
+
+% ---------------------------------------------------------------------------------------------------------------------
+\section{Reproducibility}
+\label{sec:repro}
+
+Install the library from the repository (\repo) with \code{pip install .} (Python 3.12), then run
+\begin{center}
+\code{qlassifier benchmark --noise}
+\end{center}
+to reproduce every leaderboard, noise and cost number of this paper. The saved results come from two runs on one
+\val{run.cpu} laptop (\val{run.cores} cores): the UCI datasets with \val{run.uci.jobs} workers (about
+\val{run.uci.min}\,min, commit \val{run.uci.commit}) and the protein angles with \val{run.protein.jobs} workers (about
+\val{run.protein.min}\,min, commit \val{run.protein.commit}), because ten parallel \val{protein.qubits}-qubit noise cells exhausted the
+laptop's memory. The worker count changes wall time only: every task is seeded by dataset, seed and model, and the two
+versions produce bit-identical device samples (\path{benchmarks/README.md}). Before the run, the engine reproduced
+\val{golden.rows} of \val{golden.rows} rows of the method search's reference leaderboard with \val{golden.mismatches}
+mismatches (chosen configuration and every metric within $10^{-9}$; \path{benchmarks/golden_e01.txt}). Across
+platforms, BLAS rounding can move a ROC-AUC by one resolution step and the MLP by more. Every result file
+records the versions (Qlassifier \val{version.qlassifier}, Qiskit \val{version.qiskit}, Qiskit Aer
+\val{version.qiskitaer}, scikit-learn \val{version.scikitlearn}, NumPy \val{version.numpy}) and the protocol fingerprint
+(\code{\val{protocol.fingerprint}}). Results depend only on dataset, seed, model and versions, not on scheduling. The
+saved results, per-seed tables and plots are in \path{benchmarks/}. The script
+\path{scripts/paper_tables.py} writes every number of this paper from them, and the CI fails when they drift apart. The
+method-search experiments behind Table~\ref{tab:history} are in \path{experiments/classifier/}. The
+results (Secs.~\ref{sec:sweep}, \ref{sec:hardware}, \ref{sec:stage2data}) are in
+\path{experiments/hardware/} with their scripts and raw outputs; the hardware record is
+\path{e07-hardware-point/run-seed0/record.json}, and the same script reproduces the numbers of those sections. The command
+\code{qlassifier ui} opens a local dashboard with the same leaderboards, noise and cost views.
+
+% ---------------------------------------------------------------------------------------------------------------------
+\section{Conclusion}
+\label{sec:conclusion}
+
+A quantum kernel classifier can be good by default and cheap on hardware if it keeps its circuits fixed and tunes
+after the measurement. Against the standard ZZ baseline, Qlassifier gains \val{uci.vszz.min} to \val{uci.vszz.max}\pp\ BA on the UCI
+datasets; it ties tuned classical models, has the highest mean BA of the quantum models in our harness, and loses at
+most \val{noise.max}\pp\ under IBM device noise models, with few qubits and no two-qubit gates. \val{hw.all.seeds} runs on an IBM Heron processor returned the accuracy the device model predicted,
+for \val{hw.all.qpu} QPU seconds in all. Where the data has geometry, geometry mode encodes it directly, but the gain comes from the geometric
+prior, as the classical twin shows. The benchmark, including its ties and losses, ships with the library for reuse.
+
+\bibliography{refs}
+
+\end{document}

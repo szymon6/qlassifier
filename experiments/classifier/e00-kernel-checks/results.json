@@ -1,0 +1,15 @@
+{
+  "bloch_vectors_max_abs_err": 4.440892098500626e-16,
+  "product_fidelity_max_abs_err": 1.3322676295501878e-15,
+  "zz_full_kernel_max_abs_err": 3.1086244689504383e-15,
+  "zz_full_state_overlap_min": 0.9999999999999984,
+  "zz_linear_kernel_max_abs_err": 2.220446049250313e-15,
+  "zz_linear_state_overlap_min": 0.9999999999999986,
+  "native_L1_local_pauli_max_abs_err": 2.220446049250313e-16,
+  "native_L2_local_pauli_max_abs_err": 3.3306690738754696e-16,
+  "native_L0_equals_bloch_kernel_max_abs_err": 1.7763568394002505e-15,
+  "pqk_heisenberg_local_pauli_max_abs_err": 1.4432899320127035e-15,
+  "separable_per_feature_max_abs_err": 2.220446049250313e-16,
+  "product_kernel_min_eig_noisy_vectors": 0.07640153288002828,
+  "all_ok": true
+}

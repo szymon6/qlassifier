@@ -1,0 +1,115 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* Theme colours are CSS variables injected from lib/palette.ts (single source, contrast-tested). */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--foreground);
+  --color-popover: var(--card);
+  --color-popover-foreground: var(--foreground);
+  --color-primary: var(--foreground);
+  --color-primary-foreground: var(--card);
+  --color-secondary: var(--band);
+  --color-secondary-foreground: var(--foreground);
+  --color-muted: var(--band);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-faint: var(--faint);
+  --color-accent: var(--band);
+  --color-accent-foreground: var(--foreground);
+  --color-border: var(--hairline);
+  --color-input: var(--hairline);
+  --color-ring: var(--foreground);
+  --color-ours: var(--c-ours);
+  --color-ours-text: var(--c-ours-text);
+  --color-ours-soft: var(--c-ours-soft);
+  --color-quantum: var(--c-quantum);
+  --color-classical: var(--c-classical);
+  --color-twin: var(--c-twin);
+  --color-band: var(--band);
+  --color-hairline: var(--hairline);
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --radius-card: 20px;
+  --radius: 0.75rem;
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+}
+
+:root {
+  color-scheme: light;
+  --shadow-card: 0 1px 2px rgba(14, 17, 22, 0.04), 0 12px 32px -12px rgba(14, 17, 22, 0.08);
+}
+
+.dark {
+  color-scheme: dark;
+  --shadow-card: 0 1px 0 rgba(255, 255, 255, 0.03) inset, 0 16px 40px -16px rgba(0, 0, 0, 0.6);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  html,
+  body {
+    background: var(--background);
+    color: var(--foreground);
+  }
+  html {
+    font-family: var(--font-sans);
+    font-feature-settings: "cv11", "ss01";
+    font-variant-numeric: tabular-nums;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+  button:not(:disabled),
+  [role="button"]:not(:disabled),
+  [role="radio"],
+  [role="option"] {
+    cursor: pointer;
+  }
+  :focus-visible {
+    outline: 2px solid var(--foreground);
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  .card {
+    background: var(--card);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-card);
+    outline: 1px solid var(--hairline);
+    outline-offset: -1px;
+  }
+  .label {
+    font-size: 13px;
+    line-height: 16px;
+    font-weight: 500;
+    color: var(--muted-foreground);
+    letter-spacing: -0.003em;
+  }
+  .tick {
+    font-size: 11px;
+    fill: var(--faint);
+    color: var(--faint);
+  }
+}
+
+/* No motion at all: a 0.01 ms transition would still delay HTML positions by one frame
+   while SVG attributes move at once (rows and marks must agree in every frame). */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}

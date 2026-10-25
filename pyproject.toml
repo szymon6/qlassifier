@@ -1,0 +1,126 @@
+# Qlassifier — the quantum classifier built to win, with its proof inside.
+# Locked set: uv.lock.
+
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[project]
+name = "qlassifier"
+version = "0.1.0"
+description = "A hardware-ready quantum classifier that is good by default, with a fair benchmark and a local dashboard."
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+requires-python = ">=3.12,<3.13"
+authors = [{ name = "Qlassifier authors" }]
+keywords = ["quantum machine learning", "quantum kernels", "benchmark", "qiskit", "scikit-learn"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Physics",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Typing :: Typed",
+]
+# Ranges capped at the next minor (TDD §4.6); uv.lock pins the tested set.
+dependencies = [
+    "numpy>=2.5,<2.6",
+    "scipy>=1.18,<1.19",
+    "scikit-learn>=1.9,<1.10",
+    "pandas>=3.1,<3.2",
+    "joblib>=1.6,<1.7",
+    "threadpoolctl>=3.7,<3.8",
+    "matplotlib>=3.11,<3.12",
+    "qiskit>=2.6,<2.7",
+    "qiskit-aer>=0.18,<0.19",
+    "qiskit-ibm-runtime>=0.51,<0.52",
+    "pydantic>=2.14,<2.15",
+    "fastapi>=0.162,<0.163",
+    "uvicorn>=0.54,<0.55",
+]
+
+[project.scripts]
+qlassifier = "qlassifier.cli:main"
+
+[project.urls]
+Repository = "https://github.com/szymon6/qlassifier"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1,<9.2",
+    "pytest-cov>=7.1,<7.2",
+    "pytest-timeout>=2.4,<2.5",
+    "httpx>=0.28,<0.29",
+    "jsonschema>=4.26,<4.27",
+    "ruff>=0.17,<0.18",
+    "mypy>=2.4,<2.5",
+    "nbmake>=1.5,<1.6",
+    "ipykernel>=7.4,<7.5",
+]
+# CI `docs` job (TDD §10.3): `pip install . --group docs` in a fresh venv runs the README tests and the notebooks.
+docs = [
+    "pytest>=9.1,<9.2",
+    "pytest-timeout>=2.4,<2.5",
+    "nbmake>=1.5,<1.6",
+    "ipykernel>=7.4,<7.5",
+]
+
+# ----------------------------------------------------------------------------- build
+[tool.hatch.build.targets.wheel]
+packages = ["src/qlassifier"]
+
+[tool.hatch.build.targets.sdist]
+include = ["src/qlassifier", "tests", "scripts", "README.md", "LICENSE", "pyproject.toml", "uv.lock"]
+exclude = ["**/__pycache__"]
+
+# ----------------------------------------------------------------------------- quality (TDD §10.5)
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+src = ["src", "tests", "scripts"]
+extend-exclude = ["frontend", "docs", "notebooks", ".worktrees", ".cache"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "SIM", "C4", "RUF", "PT", "N", "D1", "FIX", "TD"]
+ignore = ["D105", "D107", "N803", "N806"]
+allowed-confusables = ["×", "–", "−", "σ"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["D1"]
+"scripts/**" = ["D1"]
+
+[tool.mypy]
+strict = true
+python_version = "3.12"
+files = ["src"]
+plugins = ["pydantic.mypy"]
+
+[[tool.mypy.overrides]]
+module = [
+    "sklearn.*", "scipy.*", "joblib.*", "qiskit.*", "qiskit_aer.*", "qiskit_ibm_runtime.*", "pandas.*",
+    "threadpoolctl.*",
+]
+ignore_missing_imports = true
+
+# ----------------------------------------------------------------------------- tests (TDD §9, ADR 0009)
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra --strict-markers -m 'not e2e and not docs'"
+markers = [
+    "e2e: browser end-to-end tests against the installed wheel; CI job `e2e`",
+    "docs: documentation tests (README quickstart, notebooks); CI job `docs`",
+]
+timeout = 900
+filterwarnings = ["error::pytest.PytestUnraisableExceptionWarning"]
+
+[tool.coverage.run]
+source = ["qlassifier"]
+branch = false
+concurrency = ["thread"]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
+fail_under = 90
+exclude_also = ["if TYPE_CHECKING:", "if __name__ == .__main__.:"]

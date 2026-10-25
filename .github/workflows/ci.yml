@@ -1,0 +1,156 @@
+# CI (TDD §10.3, ADR 0009): Ubuntu only, cancel superseded runs, every test runs in exactly one job.
+# Jobs: python (this block) · frontend + e2e (dashboard) · docs (paper, README, notebooks).
+name: CI
+
+on:
+  pull_request: {}
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  python:
+    name: python (lint, types, tests + coverage >= 90%, schemas)
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v5
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.12"
+          enable-cache: true
+      - name: Install the locked environment
+        run: uv sync --locked
+      - name: Lint
+        run: uv run ruff check src tests scripts
+      - name: Format
+        run: uv run ruff format --check src tests scripts
+      - name: Types (mypy --strict)
+        run: uv run mypy
+      - name: Tests (unit, integration, contract; coverage gate)
+        run: uv run pytest -m "not e2e and not docs" --cov=qlassifier --cov-report=term-missing --cov-fail-under=90
+      - name: API schemas in sync
+        run: uv run python scripts/gen_schemas.py --check
+
+  frontend:
+    name: frontend (lint, types, contract types, vitest, build, bundle budget, build stamp)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      NEXT_TELEMETRY_DISABLED: "1"
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Install the locked dependencies
+        run: npm ci --no-audit --no-fund
+      - name: Lint
+        run: npx eslint .
+      - name: Format
+        run: npx prettier --check .
+      - name: Types
+        run: npx tsc --noEmit
+      - name: Generated API types match src/qlassifier/schemas
+        run: npm run check:types
+      - name: Unit, component and contract tests (vitest, coverage reported)
+        run: npx vitest run --coverage
+      - name: Build the static export
+        run: npm run build
+      - name: Bundle budget (NFR-5, <= 1.5 MB gzip)
+        run: python3 ../scripts/build_ui.py --budget out
+      - name: Committed build in src/qlassifier/_ui matches its sources (stamp)
+        run: python3 ../scripts/build_ui.py --check
+
+  e2e:
+    name: e2e (packaged app from a fresh venv, Playwright + axe-core)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.12"
+          enable-cache: true
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Build the wheel (contains the committed dashboard)
+        run: uv build --wheel --out-dir dist
+      - name: Install the wheel in a fresh venv (no Node, no repo on the path)
+        run: |
+          uv venv -p 3.12 /tmp/e2e-venv
+          /tmp/e2e-venv/bin/python -m ensurepip --upgrade
+          /tmp/e2e-venv/bin/python -m pip install dist/*.whl
+      - name: Install Playwright
+        working-directory: frontend
+        run: |
+          npm ci --no-audit --no-fund
+          npx playwright install --with-deps chromium
+      - name: Start the dashboard server
+        run: |
+          /tmp/e2e-venv/bin/qlassifier ui --no-browser --port 8765 --seeds 2 > /tmp/qlassifier-ui.log 2>&1 &
+          for i in $(seq 1 60); do curl -sf http://127.0.0.1:8765/api/v1/meta > /dev/null && break; sleep 1; done
+          curl -sf http://127.0.0.1:8765/api/v1/meta
+      - name: End-to-end tests (TDD §9.2)
+        working-directory: frontend
+        env:
+          E2E_QLASSIFIER: /tmp/e2e-venv/bin/qlassifier  # 5-own-data.spec.ts runs the CLI, then its own `qlassifier ui`
+        run: npx playwright test
+      - name: Server log
+        if: failure()
+        run: cat /tmp/qlassifier-ui.log
+      - name: Playwright report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: frontend/playwright-report
+          retention-days: 7
+
+  docs:
+    name: docs (README + notebooks in a fresh venv, paper tables in sync, paper PDF)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - name: Fresh venv, install as the README says (pip install .), plus the docs tools
+        run: |
+          python -m venv /tmp/docs-venv
+          /tmp/docs-venv/bin/python -m pip install --upgrade pip
+          /tmp/docs-venv/bin/python -m pip install .
+          /tmp/docs-venv/bin/python -m pip install --group docs
+      - name: README code blocks and paper tables (pytest -m docs)
+        run: /tmp/docs-venv/bin/python -m pytest -m docs tests/docs -p no:cacheprovider
+      - name: Notebooks run end to end (nbmake)
+        run: /tmp/docs-venv/bin/python -m pytest --nbmake notebooks -p no:cacheprovider
+      - name: Paper tables match the saved results
+        run: /tmp/docs-venv/bin/python scripts/paper_tables.py --check
+      - uses: wtfjoke/setup-tectonic@v4
+        with:
+          tectonic-version: 0.17.0
+      - name: Build the paper
+        run: tectonic docs/paper/main.tex
+      - name: Upload the paper PDF
+        uses: actions/upload-artifact@v4
+        with:
+          name: paper
+          path: docs/paper/main.pdf
+          retention-days: 30

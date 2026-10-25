@@ -1,0 +1,184 @@
+{
+  "$defs": {
+    "DatasetCard": {
+      "additionalProperties": false,
+      "description": "One dataset tile.",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "n_samples": {
+          "title": "N Samples",
+          "type": "integer"
+        },
+        "n_features": {
+          "title": "N Features",
+          "type": "integer"
+        },
+        "class_counts": {
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "title": "Class Counts",
+          "type": "object"
+        },
+        "positive_class": {
+          "title": "Positive Class",
+          "type": "string"
+        },
+        "licence": {
+          "title": "Licence",
+          "type": "string"
+        },
+        "source": {
+          "title": "Source",
+          "type": "string"
+        },
+        "citation": {
+          "title": "Citation",
+          "type": "string"
+        },
+        "recipe": {
+          "enum": [
+            "pca8",
+            "native"
+          ],
+          "title": "Recipe",
+          "type": "string"
+        },
+        "grouped": {
+          "title": "Grouped",
+          "type": "boolean"
+        },
+        "geometry": {
+          "anyOf": [
+            {
+              "additionalProperties": {
+                "type": "number"
+              },
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Geometry"
+        },
+        "glyph": {
+          "$ref": "#/$defs/Glyph"
+        },
+        "published": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Published"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "n_samples",
+        "n_features",
+        "class_counts",
+        "positive_class",
+        "licence",
+        "source",
+        "citation",
+        "recipe",
+        "grouped",
+        "geometry",
+        "glyph",
+        "published"
+      ],
+      "title": "DatasetCard",
+      "type": "object"
+    },
+    "Glyph": {
+      "additionalProperties": false,
+      "description": "Picture-tile glyph: 120 rows as ``[x, y, class]`` in [0, 1]².",
+      "properties": {
+        "kind": {
+          "enum": [
+            "pca",
+            "torus"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "points": {
+          "items": {
+            "items": {
+              "type": "number"
+            },
+            "type": "array"
+          },
+          "title": "Points",
+          "type": "array"
+        }
+      },
+      "required": [
+        "kind",
+        "points"
+      ],
+      "title": "Glyph",
+      "type": "object"
+    },
+    "Published": {
+      "additionalProperties": false,
+      "description": "Best published quantum result on this dataset (cross-protocol context).",
+      "properties": {
+        "value": {
+          "title": "Value",
+          "type": "number"
+        },
+        "metric": {
+          "const": "balanced_accuracy",
+          "title": "Metric",
+          "type": "string"
+        },
+        "source": {
+          "title": "Source",
+          "type": "string"
+        },
+        "method": {
+          "title": "Method",
+          "type": "string"
+        }
+      },
+      "required": [
+        "value",
+        "metric",
+        "source",
+        "method"
+      ],
+      "title": "Published",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "``GET /api/v1/datasets``.",
+  "properties": {
+    "datasets": {
+      "items": {
+        "$ref": "#/$defs/DatasetCard"
+      },
+      "title": "Datasets",
+      "type": "array"
+    }
+  },
+  "required": [
+    "datasets"
+  ],
+  "title": "DatasetList",
+  "type": "object",
+  "$id": "qlassifier/api/v1/dataset-list.json"
+}

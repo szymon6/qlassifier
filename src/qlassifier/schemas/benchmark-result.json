@@ -1,0 +1,1329 @@
+{
+  "$defs": {
+    "Comparison": {
+      "additionalProperties": false,
+      "description": "Qlassifier - ``model``.",
+      "properties": {
+        "model": {
+          "title": "Model",
+          "type": "string"
+        },
+        "metrics": {
+          "$ref": "#/$defs/PairedMetrics"
+        }
+      },
+      "required": [
+        "model",
+        "metrics"
+      ],
+      "title": "Comparison",
+      "type": "object"
+    },
+    "CostModel": {
+      "additionalProperties": false,
+      "description": "Circuit resources of one quantum model.",
+      "properties": {
+        "model": {
+          "title": "Model",
+          "type": "string"
+        },
+        "qubits": {
+          "title": "Qubits",
+          "type": "integer"
+        },
+        "two_qubit_gates": {
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "description": "Per device, median over 3 transpiler seeds.",
+          "title": "Two Qubit Gates",
+          "type": "object"
+        },
+        "depth": {
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "title": "Depth",
+          "type": "object"
+        },
+        "circuits_fit_predict": {
+          "title": "Circuits Fit Predict",
+          "type": "integer"
+        },
+        "tuning_circuits_on_device": {
+          "title": "Tuning Circuits On Device",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "model",
+        "qubits",
+        "two_qubit_gates",
+        "depth",
+        "circuits_fit_predict",
+        "tuning_circuits_on_device"
+      ],
+      "title": "CostModel",
+      "type": "object"
+    },
+    "CostStudy": {
+      "additionalProperties": false,
+      "description": "Transpiled resources and circuit counts (TDD §7.9).",
+      "properties": {
+        "n_train": {
+          "title": "N Train",
+          "type": "integer"
+        },
+        "n_test": {
+          "title": "N Test",
+          "type": "integer"
+        },
+        "devices": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Devices",
+          "type": "array"
+        },
+        "models": {
+          "items": {
+            "$ref": "#/$defs/CostModel"
+          },
+          "title": "Models",
+          "type": "array"
+        }
+      },
+      "required": [
+        "n_train",
+        "n_test",
+        "devices",
+        "models"
+      ],
+      "title": "CostStudy",
+      "type": "object"
+    },
+    "DatasetInfo": {
+      "additionalProperties": false,
+      "description": "Dataset metadata: size, class balance, source, licence, citation and benchmark recipe.\n\n``class_counts`` maps label to row count; label 1 is the positive (minority) class.",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "n_samples": {
+          "title": "N Samples",
+          "type": "integer"
+        },
+        "n_features": {
+          "title": "N Features",
+          "type": "integer"
+        },
+        "class_counts": {
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "title": "Class Counts",
+          "type": "object"
+        },
+        "positive_class": {
+          "title": "Positive Class",
+          "type": "string"
+        },
+        "source": {
+          "title": "Source",
+          "type": "string"
+        },
+        "licence": {
+          "title": "Licence",
+          "type": "string"
+        },
+        "citation": {
+          "title": "Citation",
+          "type": "string"
+        },
+        "recipe": {
+          "enum": [
+            "pca8",
+            "native"
+          ],
+          "title": "Recipe",
+          "type": "string"
+        },
+        "grouped": {
+          "title": "Grouped",
+          "type": "boolean"
+        },
+        "sha256": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Sha256"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "n_samples",
+        "n_features",
+        "class_counts",
+        "positive_class",
+        "source",
+        "licence",
+        "citation",
+        "recipe",
+        "grouped",
+        "sha256"
+      ],
+      "title": "DatasetInfo",
+      "type": "object"
+    },
+    "Environment": {
+      "additionalProperties": false,
+      "description": "Machine and run settings.",
+      "properties": {
+        "platform": {
+          "title": "Platform",
+          "type": "string"
+        },
+        "machine": {
+          "title": "Machine",
+          "type": "string"
+        },
+        "cpu_count": {
+          "title": "Cpu Count",
+          "type": "integer"
+        },
+        "n_jobs": {
+          "title": "N Jobs",
+          "type": "integer"
+        },
+        "wall_s": {
+          "description": "Wall-clock seconds of the whole run.",
+          "title": "Wall S",
+          "type": "number"
+        }
+      },
+      "required": [
+        "platform",
+        "machine",
+        "cpu_count",
+        "n_jobs",
+        "wall_s"
+      ],
+      "title": "Environment",
+      "type": "object"
+    },
+    "Highlights": {
+      "additionalProperties": false,
+      "description": "The numbers behind the dashboard's proof chips.",
+      "properties": {
+        "best_classical": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Classical model with the top mean balanced accuracy (ex post).",
+          "title": "Best Classical"
+        },
+        "vs_standard_qml": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PairedDiff"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Qlassifier - pinned ZZ QSVC, balanced accuracy."
+        },
+        "vs_best_classical": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PairedDiff"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Qlassifier - best classical, balanced accuracy."
+        },
+        "published": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Published"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "vs_published_pp": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Qlassifier mean BA - published BA, in pp.",
+          "title": "Vs Published Pp"
+        },
+        "noise_drop_max_pp": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Max mean accuracy drop over the 3 devices (part A), pp.",
+          "title": "Noise Drop Max Pp"
+        },
+        "circuit_ratio_vs_fqk_pipeline": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Circuits of the bandwidth-tuned fidelity-kernel pipeline / Qlassifier circuits.",
+          "title": "Circuit Ratio Vs Fqk Pipeline"
+        }
+      },
+      "required": [
+        "best_classical",
+        "vs_standard_qml",
+        "vs_best_classical",
+        "published",
+        "vs_published_pp",
+        "noise_drop_max_pp",
+        "circuit_ratio_vs_fqk_pipeline"
+      ],
+      "title": "Highlights",
+      "type": "object"
+    },
+    "MetricSummary": {
+      "additionalProperties": false,
+      "description": "One metric of one model over the finished seeds.",
+      "properties": {
+        "mean": {
+          "title": "Mean",
+          "type": "number"
+        },
+        "std": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Sample sd over seeds (ddof 1); null below 2 seeds.",
+          "title": "Std"
+        },
+        "ci_low": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Corrected 95% CI of the mean (Nadeau-Bengio); null below 2 seeds. Raw value: with few seeds it can leave [0, 1]; displays clip it to the metric's range.",
+          "title": "Ci Low"
+        },
+        "ci_high": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Ci High"
+        },
+        "n": {
+          "title": "N",
+          "type": "integer"
+        },
+        "tied_with_best": {
+          "description": "Corrected 95% CI of the paired difference vs the top-mean model includes 0 (top model: true). Evaluated only with >= 5 seeds; false below (TDD 7.7).",
+          "title": "Tied With Best",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "mean",
+        "std",
+        "ci_low",
+        "ci_high",
+        "n",
+        "tied_with_best"
+      ],
+      "title": "MetricSummary",
+      "type": "object"
+    },
+    "ModelMetrics": {
+      "additionalProperties": false,
+      "description": "Every metric of one model.",
+      "properties": {
+        "balanced_accuracy": {
+          "$ref": "#/$defs/MetricSummary"
+        },
+        "accuracy": {
+          "$ref": "#/$defs/MetricSummary"
+        },
+        "roc_auc": {
+          "$ref": "#/$defs/MetricSummary"
+        },
+        "f1": {
+          "$ref": "#/$defs/MetricSummary"
+        }
+      },
+      "required": [
+        "balanced_accuracy",
+        "accuracy",
+        "roc_auc",
+        "f1"
+      ],
+      "title": "ModelMetrics",
+      "type": "object"
+    },
+    "ModelSummary": {
+      "additionalProperties": false,
+      "description": "One leaderboard row.",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "family": {
+          "enum": [
+            "quantum",
+            "classical",
+            "trivial",
+            "control"
+          ],
+          "title": "Family",
+          "type": "string"
+        },
+        "role": {
+          "enum": [
+            "ours",
+            "standard_qml",
+            "published_quantum",
+            "classical",
+            "trivial",
+            "twin"
+          ],
+          "title": "Role",
+          "type": "string"
+        },
+        "metrics": {
+          "$ref": "#/$defs/ModelMetrics"
+        },
+        "time_s": {
+          "$ref": "#/$defs/Times"
+        },
+        "n_seeds_done": {
+          "title": "N Seeds Done",
+          "type": "integer"
+        },
+        "rank": {
+          "description": "Rank by mean balanced accuracy (1 = best).",
+          "title": "Rank",
+          "type": "integer"
+        },
+        "edge_share": {
+          "description": "Share of seeds whose chosen config sits on a grid edge.",
+          "title": "Edge Share",
+          "type": "number"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "family",
+        "role",
+        "metrics",
+        "time_s",
+        "n_seeds_done",
+        "rank",
+        "edge_share"
+      ],
+      "title": "ModelSummary",
+      "type": "object"
+    },
+    "NoisePart": {
+      "additionalProperties": false,
+      "description": "Scope of one part of the noise study (TDD §7.8).",
+      "properties": {
+        "id": {
+          "enum": [
+            "A",
+            "B"
+          ],
+          "title": "Id",
+          "type": "string"
+        },
+        "models": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Models",
+          "type": "array"
+        },
+        "seeds": {
+          "items": {
+            "type": "integer"
+          },
+          "title": "Seeds",
+          "type": "array"
+        },
+        "devices": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Devices",
+          "type": "array"
+        },
+        "rows": {
+          "enum": [
+            "all",
+            "subset"
+          ],
+          "title": "Rows",
+          "type": "string"
+        },
+        "n_train": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "N Train"
+        },
+        "n_test": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "N Test"
+        }
+      },
+      "required": [
+        "id",
+        "models",
+        "seeds",
+        "devices",
+        "rows",
+        "n_train",
+        "n_test"
+      ],
+      "title": "NoisePart",
+      "type": "object"
+    },
+    "NoiseRecord": {
+      "additionalProperties": false,
+      "description": "One (part, model, device, seed) noisy run next to its exact twin.",
+      "properties": {
+        "part": {
+          "enum": [
+            "A",
+            "B"
+          ],
+          "title": "Part",
+          "type": "string"
+        },
+        "model": {
+          "title": "Model",
+          "type": "string"
+        },
+        "device": {
+          "title": "Device",
+          "type": "string"
+        },
+        "seed": {
+          "title": "Seed",
+          "type": "integer"
+        },
+        "accuracy": {
+          "title": "Accuracy",
+          "type": "number"
+        },
+        "balanced_accuracy": {
+          "title": "Balanced Accuracy",
+          "type": "number"
+        },
+        "exact_accuracy": {
+          "title": "Exact Accuracy",
+          "type": "number"
+        },
+        "exact_balanced_accuracy": {
+          "title": "Exact Balanced Accuracy",
+          "type": "number"
+        },
+        "drop_pp": {
+          "description": "Accuracy lost vs exact, pp.",
+          "title": "Drop Pp",
+          "type": "number"
+        },
+        "kernel_r": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Pearson r of noisy vs exact training kernel entries.",
+          "title": "Kernel R"
+        },
+        "circuits": {
+          "title": "Circuits",
+          "type": "integer"
+        },
+        "two_qubit_gates": {
+          "title": "Two Qubit Gates",
+          "type": "integer"
+        },
+        "depth": {
+          "title": "Depth",
+          "type": "integer"
+        },
+        "n_train": {
+          "title": "N Train",
+          "type": "integer"
+        },
+        "n_test": {
+          "title": "N Test",
+          "type": "integer"
+        },
+        "seconds": {
+          "title": "Seconds",
+          "type": "number"
+        }
+      },
+      "required": [
+        "part",
+        "model",
+        "device",
+        "seed",
+        "accuracy",
+        "balanced_accuracy",
+        "exact_accuracy",
+        "exact_balanced_accuracy",
+        "drop_pp",
+        "kernel_r",
+        "circuits",
+        "two_qubit_gates",
+        "depth",
+        "n_train",
+        "n_test",
+        "seconds"
+      ],
+      "title": "NoiseRecord",
+      "type": "object"
+    },
+    "NoiseStudy": {
+      "additionalProperties": false,
+      "description": "Exact vs shot noise vs IBM device noise models.",
+      "properties": {
+        "shots": {
+          "title": "Shots",
+          "type": "integer"
+        },
+        "devices": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Devices",
+          "type": "array"
+        },
+        "parts": {
+          "items": {
+            "$ref": "#/$defs/NoisePart"
+          },
+          "title": "Parts",
+          "type": "array"
+        },
+        "records": {
+          "items": {
+            "$ref": "#/$defs/NoiseRecord"
+          },
+          "title": "Records",
+          "type": "array"
+        },
+        "summary": {
+          "items": {
+            "$ref": "#/$defs/NoiseSummary"
+          },
+          "title": "Summary",
+          "type": "array"
+        },
+        "source": {
+          "default": "run",
+          "description": "Provenance: \"run\" = measured by the run that produced this result; \"shipped\" = the shipped study (e.g. attached by GET /api/v1/results/{dataset} to a session run, which has no noise study).",
+          "enum": [
+            "run",
+            "shipped"
+          ],
+          "title": "Source",
+          "type": "string"
+        },
+        "created_at": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "ISO 8601 UTC time of the run that measured it.",
+          "title": "Created At"
+        }
+      },
+      "required": [
+        "shots",
+        "devices",
+        "parts",
+        "records",
+        "summary"
+      ],
+      "title": "NoiseStudy",
+      "type": "object"
+    },
+    "NoiseSummary": {
+      "additionalProperties": false,
+      "description": "Mean over seeds per (part, model, device); ``device == \"exact\"`` rows have drop 0.",
+      "properties": {
+        "part": {
+          "enum": [
+            "A",
+            "B"
+          ],
+          "title": "Part",
+          "type": "string"
+        },
+        "model": {
+          "title": "Model",
+          "type": "string"
+        },
+        "device": {
+          "title": "Device",
+          "type": "string"
+        },
+        "accuracy_mean": {
+          "title": "Accuracy Mean",
+          "type": "number"
+        },
+        "balanced_accuracy_mean": {
+          "title": "Balanced Accuracy Mean",
+          "type": "number"
+        },
+        "drop_mean_pp": {
+          "title": "Drop Mean Pp",
+          "type": "number"
+        },
+        "drop_worst_pp": {
+          "title": "Drop Worst Pp",
+          "type": "number"
+        },
+        "kernel_r_mean": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Kernel R Mean"
+        },
+        "n_seeds": {
+          "title": "N Seeds",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "part",
+        "model",
+        "device",
+        "accuracy_mean",
+        "balanced_accuracy_mean",
+        "drop_mean_pp",
+        "drop_worst_pp",
+        "kernel_r_mean",
+        "n_seeds"
+      ],
+      "title": "NoiseSummary",
+      "type": "object"
+    },
+    "PairedDiff": {
+      "additionalProperties": false,
+      "description": "Qlassifier minus another model, paired by seed (metric units, not pp).",
+      "properties": {
+        "mean_diff": {
+          "title": "Mean Diff",
+          "type": "number"
+        },
+        "ci_low": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Ci Low"
+        },
+        "ci_high": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Ci High"
+        },
+        "p_value": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "P Value"
+        },
+        "win_rate": {
+          "description": "Share of seeds where Qlassifier is higher.",
+          "title": "Win Rate",
+          "type": "number"
+        },
+        "n": {
+          "title": "N",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "mean_diff",
+        "ci_low",
+        "ci_high",
+        "p_value",
+        "win_rate",
+        "n"
+      ],
+      "title": "PairedDiff",
+      "type": "object"
+    },
+    "PairedMetrics": {
+      "additionalProperties": false,
+      "description": "Paired differences for every metric.",
+      "properties": {
+        "balanced_accuracy": {
+          "$ref": "#/$defs/PairedDiff"
+        },
+        "accuracy": {
+          "$ref": "#/$defs/PairedDiff"
+        },
+        "roc_auc": {
+          "$ref": "#/$defs/PairedDiff"
+        },
+        "f1": {
+          "$ref": "#/$defs/PairedDiff"
+        }
+      },
+      "required": [
+        "balanced_accuracy",
+        "accuracy",
+        "roc_auc",
+        "f1"
+      ],
+      "title": "PairedMetrics",
+      "type": "object"
+    },
+    "Protocol": {
+      "additionalProperties": false,
+      "description": "The fair-comparison protocol the numbers were produced under (TDD §7).",
+      "properties": {
+        "fingerprint": {
+          "description": "SHA-256 of grids, models, seeds, recipe and split rule.",
+          "title": "Fingerprint",
+          "type": "string"
+        },
+        "seeds": {
+          "items": {
+            "type": "integer"
+          },
+          "title": "Seeds",
+          "type": "array"
+        },
+        "test_size": {
+          "title": "Test Size",
+          "type": "number"
+        },
+        "split": {
+          "enum": [
+            "stratified",
+            "grouped",
+            "stratified_grouped"
+          ],
+          "title": "Split",
+          "type": "string"
+        },
+        "test_train_ratio": {
+          "description": "Mean realised n_test / n_train (corrected CIs use it).",
+          "title": "Test Train Ratio",
+          "type": "number"
+        },
+        "cv_folds": {
+          "title": "Cv Folds",
+          "type": "integer"
+        },
+        "recipe": {
+          "enum": [
+            "pca8",
+            "native"
+          ],
+          "title": "Recipe",
+          "type": "string"
+        },
+        "n_features_used": {
+          "title": "N Features Used",
+          "type": "integer"
+        },
+        "configs_per_model": {
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "title": "Configs Per Model",
+          "type": "object"
+        },
+        "selection_metric": {
+          "const": "balanced_accuracy",
+          "title": "Selection Metric",
+          "type": "string"
+        },
+        "ci_level": {
+          "title": "Ci Level",
+          "type": "number"
+        },
+        "statistics": {
+          "const": "nadeau_bengio_corrected_t",
+          "title": "Statistics",
+          "type": "string"
+        },
+        "models": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Models",
+          "type": "array"
+        }
+      },
+      "required": [
+        "fingerprint",
+        "seeds",
+        "test_size",
+        "split",
+        "test_train_ratio",
+        "cv_folds",
+        "recipe",
+        "n_features_used",
+        "configs_per_model",
+        "selection_metric",
+        "ci_level",
+        "statistics",
+        "models"
+      ],
+      "title": "Protocol",
+      "type": "object"
+    },
+    "Published": {
+      "additionalProperties": false,
+      "description": "Best published quantum result on this dataset (cross-protocol context).",
+      "properties": {
+        "value": {
+          "title": "Value",
+          "type": "number"
+        },
+        "metric": {
+          "const": "balanced_accuracy",
+          "title": "Metric",
+          "type": "string"
+        },
+        "source": {
+          "title": "Source",
+          "type": "string"
+        },
+        "method": {
+          "title": "Method",
+          "type": "string"
+        }
+      },
+      "required": [
+        "value",
+        "metric",
+        "source",
+        "method"
+      ],
+      "title": "Published",
+      "type": "object"
+    },
+    "RunRecord": {
+      "additionalProperties": false,
+      "description": "One (seed, model) result.",
+      "properties": {
+        "seed": {
+          "title": "Seed",
+          "type": "integer"
+        },
+        "model": {
+          "title": "Model",
+          "type": "string"
+        },
+        "config": {
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "integer"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "items": {
+                  "type": "integer"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "title": "Config",
+          "type": "object"
+        },
+        "config_index": {
+          "description": "Position of the chosen config in the model's grid.",
+          "title": "Config Index",
+          "type": "integer"
+        },
+        "cv_score": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Mean CV balanced accuracy of the chosen config.",
+          "title": "Cv Score"
+        },
+        "edge": {
+          "title": "Edge",
+          "type": "boolean"
+        },
+        "balanced_accuracy": {
+          "title": "Balanced Accuracy",
+          "type": "number"
+        },
+        "accuracy": {
+          "title": "Accuracy",
+          "type": "number"
+        },
+        "roc_auc": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Roc Auc"
+        },
+        "f1": {
+          "title": "F1",
+          "type": "number"
+        },
+        "t_tune": {
+          "title": "T Tune",
+          "type": "number"
+        },
+        "t_fit": {
+          "title": "T Fit",
+          "type": "number"
+        },
+        "t_predict": {
+          "title": "T Predict",
+          "type": "number"
+        },
+        "n_train": {
+          "title": "N Train",
+          "type": "integer"
+        },
+        "n_test": {
+          "title": "N Test",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "seed",
+        "model",
+        "config",
+        "config_index",
+        "cv_score",
+        "edge",
+        "balanced_accuracy",
+        "accuracy",
+        "roc_auc",
+        "f1",
+        "t_tune",
+        "t_fit",
+        "t_predict",
+        "n_train",
+        "n_test"
+      ],
+      "title": "RunRecord",
+      "type": "object"
+    },
+    "Times": {
+      "additionalProperties": false,
+      "description": "Median seconds per seed (in-worker).",
+      "properties": {
+        "tune": {
+          "title": "Tune",
+          "type": "number"
+        },
+        "fit": {
+          "title": "Fit",
+          "type": "number"
+        },
+        "predict": {
+          "title": "Predict",
+          "type": "number"
+        }
+      },
+      "required": [
+        "tune",
+        "fit",
+        "predict"
+      ],
+      "title": "Times",
+      "type": "object"
+    },
+    "Versions": {
+      "additionalProperties": false,
+      "description": "Package versions that produced the result.",
+      "properties": {
+        "qlassifier": {
+          "title": "Qlassifier",
+          "type": "string"
+        },
+        "python": {
+          "title": "Python",
+          "type": "string"
+        },
+        "numpy": {
+          "title": "Numpy",
+          "type": "string"
+        },
+        "scipy": {
+          "title": "Scipy",
+          "type": "string"
+        },
+        "scikit_learn": {
+          "title": "Scikit Learn",
+          "type": "string"
+        },
+        "pandas": {
+          "title": "Pandas",
+          "type": "string"
+        },
+        "joblib": {
+          "title": "Joblib",
+          "type": "string"
+        },
+        "qiskit": {
+          "title": "Qiskit",
+          "type": "string"
+        },
+        "qiskit_aer": {
+          "title": "Qiskit Aer",
+          "type": "string"
+        },
+        "qiskit_ibm_runtime": {
+          "title": "Qiskit Ibm Runtime",
+          "type": "string"
+        }
+      },
+      "required": [
+        "qlassifier",
+        "python",
+        "numpy",
+        "scipy",
+        "scikit_learn",
+        "pandas",
+        "joblib",
+        "qiskit",
+        "qiskit_aer",
+        "qiskit_ibm_runtime"
+      ],
+      "title": "Versions",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Leaderboard of Qlassifier vs every baseline on one dataset, with statistics, noise and cost.\n\nBuild it with :func:`qlassifier.benchmark`, load it with :meth:`from_json` or :meth:`cached`.",
+  "properties": {
+    "schema_version": {
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "partial",
+        "complete",
+        "cancelled"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "source": {
+      "enum": [
+        "run",
+        "shipped"
+      ],
+      "title": "Source",
+      "type": "string"
+    },
+    "created_at": {
+      "description": "ISO 8601 UTC.",
+      "title": "Created At",
+      "type": "string"
+    },
+    "versions": {
+      "$ref": "#/$defs/Versions"
+    },
+    "environment": {
+      "$ref": "#/$defs/Environment"
+    },
+    "dataset": {
+      "$ref": "#/$defs/DatasetInfo"
+    },
+    "protocol": {
+      "$ref": "#/$defs/Protocol"
+    },
+    "models": {
+      "items": {
+        "$ref": "#/$defs/ModelSummary"
+      },
+      "title": "Models",
+      "type": "array"
+    },
+    "comparisons": {
+      "items": {
+        "$ref": "#/$defs/Comparison"
+      },
+      "title": "Comparisons",
+      "type": "array"
+    },
+    "highlights": {
+      "$ref": "#/$defs/Highlights"
+    },
+    "runs": {
+      "items": {
+        "$ref": "#/$defs/RunRecord"
+      },
+      "title": "Runs",
+      "type": "array"
+    },
+    "noise": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/NoiseStudy"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "cost": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/CostStudy"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "status",
+    "source",
+    "created_at",
+    "versions",
+    "environment",
+    "dataset",
+    "protocol",
+    "models",
+    "comparisons",
+    "highlights",
+    "runs",
+    "noise",
+    "cost"
+  ],
+  "title": "BenchmarkResult",
+  "type": "object",
+  "$id": "qlassifier/api/v1/benchmark-result.json"
+}

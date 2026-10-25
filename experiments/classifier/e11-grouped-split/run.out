@@ -1,0 +1,13 @@
+wrote results.csv: 100 rows in 509.2 s
+                                   ba     acc    t_tune
+dataset         model                                  
+protein_strands bloch_gauss    0.8715  0.9141    7.5082
+                grad_boost     0.8719  0.9206   15.8965
+                logreg         0.8087  0.8827    0.2790
+                mlp            0.8723  0.9199  381.3268
+                qlass_geo      0.8795  0.9201    6.2117
+                random_forest  0.8607  0.9197   51.1781
+                rbf_svm        0.8633  0.9130    9.2842
+                separable      0.8765  0.9152   11.0772
+                trivial        0.5000  0.7867    0.0000
+                zz_qsvc        0.7563  0.8609    0.6671

@@ -1,0 +1,51 @@
+{
+  "command": "qlassifier benchmark breast_cancer --out benchmarks/bt10",
+  "versions": {
+    "qlassifier": "0.1.0",
+    "python": "3.12.0",
+    "numpy": "2.5.4",
+    "scipy": "1.18.1",
+    "scikit_learn": "1.9.1",
+    "pandas": "3.1.0",
+    "joblib": "1.6.0",
+    "qiskit": "2.6.1",
+    "qiskit_aer": "0.18.0",
+    "qiskit_ibm_runtime": "0.51.0"
+  },
+  "platform": "macOS-27.0-arm64-arm-64bit",
+  "machine": "arm64",
+  "cpu": "Apple M4",
+  "cores": 10,
+  "n_jobs": 10,
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+  ],
+  "datasets": [
+    "breast_cancer"
+  ],
+  "noise": false,
+  "wall_s": {
+    "breast_cancer": 56.2
+  },
+  "per_dataset": {
+    "breast_cancer": {
+      "wall_s": 56.2,
+      "n_jobs": 10,
+      "command": "qlassifier benchmark breast_cancer --out benchmarks/bt10"
+    }
+  },
+  "load_avg_at_start": [
+    1.95,
+    3.13,
+    4.49
+  ]
+}

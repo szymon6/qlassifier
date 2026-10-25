@@ -1,0 +1,14 @@
+wrote results.csv: 110 rows in 60.5 s
+                                 ba     acc   t_tune
+dataset       model                                 
+breast_cancer bloch_gauss    0.9478  0.9556   0.2543
+              fqk_bw_linear  0.9458  0.9561   0.5803
+              grad_boost     0.9475  0.9532   7.2136
+              logreg         0.9536  0.9608   0.2373
+              mlp            0.9610  0.9673  23.1160
+              pqk            0.9502  0.9596   0.4319
+              random_forest  0.9230  0.9316  22.2886
+              rbf_svm        0.9486  0.9573   0.3812
+              separable      0.9524  0.9596   0.4069
+              trivial        0.5000  0.6257   0.0000
+              zz_qsvc        0.5714  0.6766   0.1044

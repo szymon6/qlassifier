@@ -1,0 +1,13 @@
+wrote quakes.csv: 100 rows in 2776.0 s
+                               ba     acc     t_tune
+dataset     model                                   
+deep_quakes bloch_gauss    0.7231  0.8597   313.6401
+            grad_boost     0.8348  0.8961    66.1443
+            logreg         0.5000  0.7873     1.0523
+            mlp            0.7640  0.8735  1331.7720
+            qlass_geo      0.7686  0.8829   129.9705
+            random_forest  0.8351  0.9046   213.2073
+            rbf_svm        0.7125  0.8619   404.9452
+            separable      0.5000  0.7873   244.8599
+            trivial        0.5000  0.7873     0.0000
+            zz_qsvc        0.5000  0.7873     1.8206

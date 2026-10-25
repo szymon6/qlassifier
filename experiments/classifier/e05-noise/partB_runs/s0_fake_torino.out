@@ -1,0 +1,3 @@
+B seed 0 bloch_gauss fake_torino 3.4s
+B seed 0 fqk_bw_linear fake_torino 1067.3s
+partB done in 1074 s

@@ -1,0 +1,202 @@
+{
+  "devices": {
+    "fake_torino": {
+      "qlassifier product, 1 of 3 settings (pca8)": {
+        "qubits": 4,
+        "two_qubit_gates": 0,
+        "two_qubit_range": [
+          0,
+          0
+        ],
+        "depth": 6,
+        "est_error_free_shot": 0.976
+      },
+      "zz_qsvc pinned (full), compute-uncompute": {
+        "qubits": 8,
+        "two_qubit_gates": 393,
+        "two_qubit_range": [
+          391,
+          431
+        ],
+        "depth": 631,
+        "est_error_free_shot": 0.191
+      },
+      "fqk_bw linear, compute-uncompute": {
+        "qubits": 8,
+        "two_qubit_gates": 54,
+        "two_qubit_range": [
+          54,
+          54
+        ],
+        "depth": 135,
+        "est_error_free_shot": 0.677
+      },
+      "separable (Bowles), compute-uncompute": {
+        "qubits": 8,
+        "two_qubit_gates": 0,
+        "two_qubit_range": [
+          0,
+          0
+        ],
+        "depth": 6,
+        "est_error_free_shot": 0.949
+      },
+      "pqk Heisenberg (d+1 qubits), 1 of 3 settings": {
+        "qubits": 9,
+        "two_qubit_gates": 72,
+        "two_qubit_range": [
+          72,
+          72
+        ],
+        "depth": 167,
+        "est_error_free_shot": 0.617
+      },
+      "qlassifier product, 1 of 3 settings (all30)": {
+        "qubits": 15,
+        "two_qubit_gates": 0,
+        "two_qubit_range": [
+          0,
+          0
+        ],
+        "depth": 6,
+        "est_error_free_shot": 0.898
+      }
+    },
+    "fake_fez": {
+      "qlassifier product, 1 of 3 settings (pca8)": {
+        "qubits": 4,
+        "two_qubit_gates": 0,
+        "two_qubit_range": [
+          0,
+          0
+        ],
+        "depth": 6,
+        "est_error_free_shot": 0.99
+      },
+      "zz_qsvc pinned (full), compute-uncompute": {
+        "qubits": 8,
+        "two_qubit_gates": 428,
+        "two_qubit_range": [
+          427,
+          442
+        ],
+        "depth": 753,
+        "est_error_free_shot": 0.233
+      },
+      "fqk_bw linear, compute-uncompute": {
+        "qubits": 8,
+        "two_qubit_gates": 54,
+        "two_qubit_range": [
+          54,
+          54
+        ],
+        "depth": 135,
+        "est_error_free_shot": 0.79
+      },
+      "separable (Bowles), compute-uncompute": {
+        "qubits": 8,
+        "two_qubit_gates": 0,
+        "two_qubit_range": [
+          0,
+          0
+        ],
+        "depth": 6,
+        "est_error_free_shot": 0.977
+      },
+      "pqk Heisenberg (d+1 qubits), 1 of 3 settings": {
+        "qubits": 9,
+        "two_qubit_gates": 72,
+        "two_qubit_range": [
+          72,
+          72
+        ],
+        "depth": 167,
+        "est_error_free_shot": 0.734
+      },
+      "qlassifier product, 1 of 3 settings (all30)": {
+        "qubits": 15,
+        "two_qubit_gates": 0,
+        "two_qubit_range": [
+          0,
+          0
+        ],
+        "depth": 6,
+        "est_error_free_shot": 0.953
+      }
+    },
+    "fake_brisbane": {
+      "qlassifier product, 1 of 3 settings (pca8)": {
+        "qubits": 4,
+        "two_qubit_gates": 0,
+        "two_qubit_range": [
+          0,
+          0
+        ],
+        "depth": 6,
+        "est_error_free_shot": 0.972
+      },
+      "zz_qsvc pinned (full), compute-uncompute": {
+        "qubits": 8,
+        "two_qubit_gates": 394,
+        "two_qubit_range": [
+          387,
+          425
+        ],
+        "depth": 1101,
+        "est_error_free_shot": 0.051
+      },
+      "fqk_bw linear, compute-uncompute": {
+        "qubits": 8,
+        "two_qubit_gates": 54,
+        "two_qubit_range": [
+          54,
+          54
+        ],
+        "depth": 194,
+        "est_error_free_shot": 0.617
+      },
+      "separable (Bowles), compute-uncompute": {
+        "qubits": 8,
+        "two_qubit_gates": 0,
+        "two_qubit_range": [
+          0,
+          0
+        ],
+        "depth": 6,
+        "est_error_free_shot": 0.937
+      },
+      "pqk Heisenberg (d+1 qubits), 1 of 3 settings": {
+        "qubits": 9,
+        "two_qubit_gates": 72,
+        "two_qubit_range": [
+          72,
+          72
+        ],
+        "depth": 219,
+        "est_error_free_shot": 0.531
+      },
+      "qlassifier product, 1 of 3 settings (all30)": {
+        "qubits": 15,
+        "two_qubit_gates": 0,
+        "two_qubit_range": [
+          0,
+          0
+        ],
+        "depth": 6,
+        "est_error_free_shot": 0.871
+      }
+    }
+  },
+  "circuit_counts_breast_cancer": {
+    "n_train": 398,
+    "n_test": 171,
+    "qlassifier_3_settings": 1707,
+    "fqk_bw_pipeline_search_6_bandwidths_x_5_folds": 2276238,
+    "fqk_bw_pipeline_final_gram": 147061,
+    "fqk_bw_pipeline_total": 2423299,
+    "ratio_vs_fqk_bw_pipeline": 1419.6,
+    "ratio_vs_fqk_final_gram_only": 86.2,
+    "pqk_3_settings": 1707,
+    "qlassifier_tuning_circuits": 0
+  }
+}

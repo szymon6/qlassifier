@@ -1,0 +1,42 @@
+{
+ "breast_cancer": {
+  "rows": 120,
+  "rows_shipped": 120,
+  "rows_new": 120,
+  "max_abs_diff": {
+   "balanced_accuracy": 0.0,
+   "accuracy": 0.0,
+   "roc_auc": 0.0,
+   "f1": 0.0
+  },
+  "rows_within_1e-9": 120,
+  "config_equal": 120,
+  "edge_equal": 120
+ },
+ "heart": {
+  "rows": 120,
+  "rows_shipped": 120,
+  "rows_new": 120,
+  "max_abs_diff": {
+   "balanced_accuracy": 0.0,
+   "accuracy": 0.0,
+   "roc_auc": 0.0,
+   "f1": 0.0
+  },
+  "rows_within_1e-9": 120,
+  "config_equal": 120,
+  "edge_equal": 120
+ },
+ "stage1_targets": {
+  "BT-1": "met",
+  "BT-2": "met",
+  "BT-3": "met",
+  "BT-4": "met",
+  "BT-5": "met",
+  "BT-6": "report-only",
+  "BT-7": "met",
+  "BT-8": "met",
+  "BT-9": "met",
+  "BT-10": "met"
+ }
+}

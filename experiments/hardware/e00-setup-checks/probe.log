@@ -1,0 +1,15 @@
+python 3.12.0
+base noise model: 1132 errors, build 1.8s
+s=0.5: 1132 errors (attrs ['_target']); readout q0 0.01147 -> 0.00574 (x0.50); sx q0 identity prob 0.998731 -> 0.999365 (non-identity x0.50); kinds ['id', 'reset', 'x', 'y', 'z']
+s=2.0: 1132 errors (attrs ['_target']); readout q0 0.01147 -> 0.02295 (x2.00); sx q0 identity prob 0.998731 -> 0.997462 (non-identity x2.00); kinds ['id', 'reset', 'x', 'y', 'z']
+transpile + per-qubit circuits 0.1s, layout [84, 96, 23, 4], per_qubit_exact True
+s=0.0: per-qubit cell 1.2s, mean|R-exact| 0.0174, RSS 1.12 GB
+s=2.0: per-qubit cell 2.8s, mean|R-exact| 0.0178, RSS 1.33 GB
+ZZ linear: 2Q 54, depth 169, duration 5.7600000000000024e-06; density_matrix: 60 circuits 2.8s -> 46 ms/circuit, 4,170-circuit Gram ~ 3.2 min; mean p0 0.007; RSS 1.42 GB
+ZZ linear: 2Q 54, depth 169, duration 5.7600000000000024e-06; automatic: 60 circuits 2.8s -> 47 ms/circuit, 4,170-circuit Gram ~ 3.2 min; mean p0 0.007; RSS 1.53 GB
+ZZ full: 2Q 433, depth 861, duration 3.0803999999999924e-05; density_matrix: 60 circuits 15.7s -> 261 ms/circuit, 4,170-circuit Gram ~ 18.1 min; mean p0 0.004; RSS 1.54 GB
+ZZ full: 2Q 433, depth 861, duration 3.0803999999999924e-05; automatic: 60 circuits 15.6s -> 260 ms/circuit, 4,170-circuit Gram ~ 18.0 min; mean p0 0.004; RSS 1.55 GB
+qlassifier X duration s 1.632e-06 depth 8
+qlassifier Y duration s 1.608e-06 depth 7
+qlassifier Z duration s 1.632e-06 depth 10
+done RSS 1.55 GB
